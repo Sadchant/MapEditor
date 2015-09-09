@@ -1,0 +1,164 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{F98595EF-3563-4CCD-91EC-6989BD29352C}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <RootNamespace>Mapeditor</RootNamespace>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v120</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v120</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <LinkIncremental>true</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <SDLCheck>true</SDLCheck>
+      <AdditionalIncludeDirectories>D:\C++ und SDL\SDL2-devel-2.0.3-VC\SDL2-2.0.3\include;D:\C++ und SDL\SDL2_ttf-devel-2.0.12-VC\SDL2_ttf-2.0.12\include;D:\C++ und SDL\SDL2_image-devel-2.0.0-VC\SDL2_image-2.0.0\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>D:\C++ und SDL\SDL2-devel-2.0.3-VC\SDL2-2.0.3\lib\x86;D:\C++ und SDL\SDL2_ttf-devel-2.0.12-VC\SDL2_ttf-2.0.12\lib\x86;D:\C++ und SDL\SDL2_image-devel-2.0.0-VC\SDL2_image-2.0.0\lib\x86;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>SDL2_image.lib;SDL2_ttf.lib;SDL2.lib;SDL2main.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <SDLCheck>true</SDLCheck>
+      <AdditionalIncludeDirectories>D:\C++ und SDL\SDL2-devel-2.0.3-VC\SDL2-2.0.3\include;D:\C++ und SDL\SDL2_ttf-devel-2.0.12-VC\SDL2_ttf-2.0.12\include;D:\C++ und SDL\SDL2_image-devel-2.0.0-VC\SDL2_image-2.0.0\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalLibraryDirectories>D:\C++ und SDL\SDL2-devel-2.0.3-VC\SDL2-2.0.3\lib\x86;D:\C++ und SDL\SDL2_ttf-devel-2.0.12-VC\SDL2_ttf-2.0.12\lib\x86;D:\C++ und SDL\SDL2_image-devel-2.0.0-VC\SDL2_image-2.0.0\lib\x86;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>SDL2_image.lib;SDL2_ttf.lib;SDL2.lib;SDL2main.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="DrawProgress.cpp" />
+    <ClCompile Include="EventManager.cpp" />
+    <ClCompile Include="GroundHandler.cpp" />
+    <ClCompile Include="BackgroundImage.cpp" />
+    <ClCompile Include="GroundProgress.cpp" />
+    <ClCompile Include="GroundRadiusManager.cpp" />
+    <ClCompile Include="Brushmanager.cpp" />
+    <ClCompile Include="ButtonColorManager.cpp" />
+    <ClCompile Include="ButtonPage_BODEN.cpp" />
+    <ClCompile Include="ButtonPage_MECHANISMEN.cpp" />
+    <ClCompile Include="ButtonPage_MONSTER.cpp" />
+    <ClCompile Include="ButtonPage_OBJEKTE.cpp" />
+    <ClCompile Include="Debugscreen.cpp" />
+    <ClCompile Include="Framework.cpp" />
+    <ClCompile Include="Loader.cpp" />
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="MapManager.cpp" />
+    <ClCompile Include="ProgressManager.cpp" />
+    <ClCompile Include="Rectangle.cpp" />
+    <ClCompile Include="Renderable.cpp" />
+    <ClCompile Include="Renderlayer.cpp" />
+    <ClCompile Include="SDLPart.cpp" />
+    <ClCompile Include="BrushButton.cpp" />
+    <ClCompile Include="Sdl_Buttons.cpp" />
+    <ClCompile Include="Sprite.cpp" />
+    <ClCompile Include="SpriteObject.cpp" />
+    <ClCompile Include="test.cpp" />
+    <ClCompile Include="Text.cpp" />
+    <ClCompile Include="Texture.cpp" />
+    <ClCompile Include="Timer.cpp" />
+    <ClCompile Include="WindowsPart.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="ABackgroundImage.h" />
+    <ClInclude Include="ABrushButton.h" />
+    <ClInclude Include="AEventUser.h" />
+    <ClInclude Include="AMapManager.h" />
+    <ClInclude Include="AProgress.h" />
+    <ClInclude Include="DrawProgress.h" />
+    <ClInclude Include="EventManager.h" />
+    <ClInclude Include="GroundHandler.h" />
+    <ClInclude Include="BackgroundImage.h" />
+    <ClInclude Include="Brushmanager.h" />
+    <ClInclude Include="GroundProgress.h" />
+    <ClInclude Include="GroundRadiusManager.h" />
+    <ClInclude Include="ButtonColorManager.h" />
+    <ClInclude Include="ButtonEvents.h" />
+    <ClInclude Include="ButtonPage.h" />
+    <ClInclude Include="ButtonPage_BODEN.h" />
+    <ClInclude Include="ButtonPage_MECHANISMEN.h" />
+    <ClInclude Include="ButtonPage_MONSTER.h" />
+    <ClInclude Include="ButtonPage_OBJEKTE.h" />
+    <ClInclude Include="Debugscreen.h" />
+    <ClInclude Include="Framework.h" />
+    <ClInclude Include="KeyMouseManager.h" />
+    <ClInclude Include="Loader.h" />
+    <ClInclude Include="MapManager.h" />
+    <ClInclude Include="ProgressManager.h" />
+    <ClInclude Include="Rectangle.h" />
+    <ClInclude Include="Renderable.h" />
+    <ClInclude Include="Renderlayer.h" />
+    <ClInclude Include="SDLPart.h" />
+    <ClInclude Include="BrushButton.h" />
+    <ClInclude Include="Sdl_Buttons.h" />
+    <ClInclude Include="Singleton.h" />
+    <ClInclude Include="Sprite.h" />
+    <ClInclude Include="SpriteObject.h" />
+    <ClInclude Include="Text.h" />
+    <ClInclude Include="Texture.h" />
+    <ClInclude Include="Timer.h" />
+    <ClInclude Include="Util.h" />
+    <ClInclude Include="WindowsPart.h" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
