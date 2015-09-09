@@ -25,17 +25,20 @@ int CBrushmanager::GetGroundId()
 
 void CBrushmanager::Map_Mouse_Key(ME_MOUSE mouse, ABrushButton* brushButton)
 {
-	for (auto ibrushButton : brushButtons)
+	for (int i = 0; i < 3; i++)
 	{
-		if (ibrushButton == brushButton)
-			ibrushButton = NULL;
+		if (brushButtons[i] == brushButton)
+		{
+			brushButtons[i] = NULL;
+			break;
+		}
 	}
 	if (brushButtons[mouse] && (brushButtons[mouse] != brushButton))
 	{
 		cout << "Deselect" << endl;
 		brushButtons[mouse]->DeSelect();
 	}
-		
+
 	brushButtons[mouse] = brushButton;
 }
 
