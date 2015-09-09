@@ -1,14 +1,10 @@
 #include "GroundHandler.h"
 
-CGroundHandler::CGroundHandler(SDL_Rect* camera)
+CGroundHandler::CGroundHandler(SDL_Rect* camera):
+terrainRenderer(&camera, &map, numTilesX)
 {
 	this->camera = camera;
 	map = NULL;
-	lowerSpriteTile = NULL;
-	for (int i = 0; i < NUMUPST; i++)
-	{
-		upperSpriteTiles[i] = NULL;
-	}
 }
 
 CGroundHandler::~CGroundHandler()
@@ -33,11 +29,7 @@ void CGroundHandler::Neue_map(int width, int height)
 			map[i].upperTileTypes[j] = -1;
 		}
 	}
-	lowerSpriteTile = new CSpriteObject(g_pLoader->getTexture("T_TEXTURSET1"), numTiles);
-	for (int i = 0; i < NUMUPST; i++)
-	{
-		upperSpriteTiles[i] = new CSpriteObject(g_pLoader->getTexture("T_TEXTURSET1"), numTiles);
-	}
+
 	groundRadiusMan.Init(camera, tile_width, tile_height, numTilesX);
 }
 
@@ -72,11 +64,7 @@ Point CGroundHandler::Load_map(string filePath)
 		}
 	}
 	input.close();
-	lowerSpriteTile = new CSpriteObject(g_pLoader->getTexture("T_TEXTURSET1"), numTiles);
-	for (int i = 0; i < NUMUPST; i++)
-	{
-		upperSpriteTiles[i] = new CSpriteObject(g_pLoader->getTexture("T_TEXTURSET1"), numTiles);
-	}
+
 	groundRadiusMan.Init(camera, tile_width, tile_height, numTilesX);
 	return dimensions;
 }
@@ -116,16 +104,12 @@ void CGroundHandler::Change_groesse(int width, int height, int aktBackgroundId)
 		oldMap[i] = map[i];
 	}
 	Delete_Map();
-	// néuen Map-Kram anlegen
+	// neuen Map-Kram anlegen
 	numTilesX = width;
 	numTilesY = height;
 	numTiles = numTilesX*numTilesY;
 	map = new Tiles[numTiles];
-	lowerSpriteTile = new CSpriteObject(g_pLoader->getTexture("T_TEXTURSET1"), numTiles);
-	for (int i = 0; i < NUMUPST; i++)
-	{
-		upperSpriteTiles[i] = new CSpriteObject(g_pLoader->getTexture("T_TEXTURSET1"), numTiles);
-	}
+
 	int oldindex;
 
 	for (int i = 0; i < numTilesY; i++)
@@ -187,38 +171,7 @@ void CGroundHandler::Draw(int mouseX, int mouseY, int id, int radius)
 
 void CGroundHandler::Render()
 {
-	for (int i = 0; i < (camera->h / tile_height) + 1; i++) // geht über die Anzahl der Tiles in y-Richtung
-	{
-		for (int j = 0; j < (camera->w / tile_width) + 2; j++) // geht über die Anzahl der Tiles in x-Richtung, hier + 2, da rundungsfehler aufgefangen werden müssen
-		{
-			index_1 = (int)(i + camera->y / tile_height);
-			index_2 = (int)(j + camera->x / tile_width);
-			index = (index_1 * numTilesX) + index_2;
-			if (index >= numTiles)
-				break;
-			temp_x = index_2 * tile_width;
-			temp_y = index_1 * tile_height;
-			lowerSpriteTile->SetPos(index, temp_x - camera->x, temp_y - camera->y);
-			lowerSpriteTile->Render(index, (map[index].lowerTileType) % 4, map[index].lowerTileType/50);
-
-			// Ränder rendern
-			for (int k = 0; k < NUMUPST; k++)
-			{
-				if (map[index].upperTileTypes[k] > -1)
-				{
-					upperSpriteTiles[k]->SetPos(index, temp_x - camera->x, temp_y - camera->y);
-					upperSpriteTiles[k]->Render(index, (map[index].lowerTileType) % 4, (map[index].upperTileTypes[k]) / 4);
-				}
-			}
-			
-			
-			index_1 = -1;
-			index_2 = -1;
-			index = -1;
-			temp_x = -1;
-			temp_y = -1;
-		}
-	}
+	terrainRenderer.Render();
 }
 
 void CGroundHandler::RenderBorder(int mouseX, int mouseY, int radius)
@@ -229,11 +182,6 @@ void CGroundHandler::RenderBorder(int mouseX, int mouseY, int radius)
 
 void CGroundHandler::Delete_Map()
 {
-	SAFE_DELETE(lowerSpriteTile);
-	for (int i = 0; i < NUMUPST; i++)
-	{
-		SAFE_DELETE(upperSpriteTiles[i]);
-	}
 	SAFE_DELETE_ARRAY(map);
 	numTiles = -1;
 }

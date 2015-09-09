@@ -1,11 +1,10 @@
 #ifndef BACKGROUNDHANDLER_H
 #define BACKGROUNDHANDLER_H
 
-#define NUMUPST 4
-
 #include <mutex>
 #include "SpriteObject.h"
 #include "GroundRadiusManager.h"
+#include "TerrainRenderer.h"
 
 class CGroundHandler
 {
@@ -28,11 +27,6 @@ public:
 	void RenderBorder(int mouseX, int mouseY, int radius);
 
 private:
-	struct Tiles
-	{
-		int lowerTileType;
-		int upperTileTypes[NUMUPST];
-	};
 	void Delete_Map();
 	int GetRandom();	// gibt Zahl zwischen 0 und 3 zurück
 	int CalculateModus(int numTilesX, int radius, int index);
@@ -43,7 +37,7 @@ private:
 
 	Tiles* map;
 	int numTiles;
-	int tile_width = 45, tile_height = 45;
+	int tile_width = TILEWIDTH, tile_height = TILEHEIGHT;
 	int numTilesX, numTilesY;
 	int index_1, // erste Position im zweidimensionalen Tile-Array, repräsentiert y
 		index_2, // zweite Position im zweidimensionalen Tile-Array, repräsentiert x
@@ -51,8 +45,8 @@ private:
 		temp_x, // tatsächliche x-Position
 		temp_y; // tatsächliche y-Position
 
-	CSpriteObject* lowerSpriteTile;	// Container für alle unteren Tile-Sprites
-	CSpriteObject* upperSpriteTiles[NUMUPST];
+	TerrainRenderer terrainRenderer;
+	
 
 	SDL_Rect* camera;
 	CGroundRadiusManager groundRadiusMan;

@@ -128,6 +128,9 @@
     <ClCompile Include="GroundProgress.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
+    <ClCompile Include="TerrainRenderer.cpp">
+      <Filter>Quelldateien\GUI/Input</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Framework.h">
@@ -246,6 +249,9 @@
     </ClInclude>
     <ClInclude Include="GroundProgress.h">
       <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="TerrainRenderer.h">
+      <Filter>Headerdateien\GUI/Input</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
