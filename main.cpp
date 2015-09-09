@@ -2,7 +2,6 @@
 #include "SDLPart.h"
 #include "EventManager.h"
 #include <thread>
-#include "Sprite.h"
 
 void initButtons();
 void SDLThread(CSDLPart* windowsPart, boolean* window_alive);
@@ -23,7 +22,6 @@ int main(int argc, char *argv[])
 	boolean window_alive = true;
 	thread sdl_Thread (SDLThread, &sdlPart, &window_alive);
 
-	cout << sizeof(CSprite);
 	while (window_alive)
 	{
 		window_alive = windowsPart->HandleMessages();

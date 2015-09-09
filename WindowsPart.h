@@ -80,6 +80,7 @@ private:
 	string ws2s(const wstring& wstr);
 	void ManageKey(int key_code, bool pressed, HWND hWnd);
 
+	HWND hauptfenster;
 	HWND popup;
 	HWND hGroesse_aendern;
 	HWND hBild_oeffnen;

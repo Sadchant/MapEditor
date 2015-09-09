@@ -2,17 +2,15 @@
 
 CWindowsPart::CWindowsPart(HINSTANCE hInst)
 {
-	HWND hWnd;   // Fenster-Handle
-
 	// Hauptfenster erstellen
-	hWnd = erstelleHauptfenster(hInst);
+	hauptfenster = erstelleHauptfenster(hInst);
 
 	// Prüfen, ob alles glatt ging
-	if (hWnd == NULL)
+	if (hauptfenster == NULL)
 		cout << "KRACHBUMM boeser Fehler beim Fenster-Erzeugen!" << endl;
 
 	// Alle Steuerelemente erstellen
-	erstelleSteuerelemente(hWnd, hInst);
+	erstelleSteuerelemente(hauptfenster, hInst);
 
 	//string exepath = ExePath();
 	zeiger_auf_Instanz = this;
@@ -320,8 +318,7 @@ string CWindowsPart::mapFileDialog(HWND hWnd, bool open)
 	{
 		if (GetOpenFileName(&ofn))
 		{
-			wstring wString = filePath;
-			result = ws2s(wString);
+			result = ws2s(filePath);
 		}
 	}
 	else
@@ -350,7 +347,7 @@ string CWindowsPart::bildFileDialog(HWND hWnd)
 	ofn.lpstrFile = filePath;
 	ofn.nMaxFile = MAX_PATH;
 	ofn.Flags = OFN_EXPLORER | OFN_FILEMUSTEXIST | OFN_HIDEREADONLY;
-	ofn.lpstrDefExt = L"map";
+	ofn.lpstrDefExt = L"png";
 
 	if (GetOpenFileName(&ofn))
 	{
@@ -373,10 +370,10 @@ LRESULT CALLBACK CWindowsPart::windowProc(HWND hWnd, UINT message, WPARAM wParam
 	// Fenster schließen? (Auch Alt-F4)
 	case WM_DESTROY:
 	{
-					   // Nachricht zum Beenden schicken
-					   on = false;
-					   PostQuitMessage(0);
-					   return (0);
+		// Nachricht zum Beenden schicken
+		on = false;
+		PostQuitMessage(0);
+		return (0);
 
 	}break;
 
@@ -395,7 +392,12 @@ LRESULT CALLBACK CWindowsPart::windowProc(HWND hWnd, UINT message, WPARAM wParam
 		{
 			gui_data.save_path = mapFileDialog(hWnd, true);
 			if (gui_data.save_path.compare("\0"))
-				g_pEventManager->Map_oeffnen(gui_data.save_path);
+			{
+				Point temp_point = g_pEventManager->Map_oeffnen(gui_data.save_path);
+				gui_data.width = temp_point.x;
+				gui_data.height = temp_point.y;
+			}
+				
 			return 0;
 		}
 		case ID_MENU_SPEICHERN:
@@ -426,38 +428,25 @@ LRESULT CALLBACK CWindowsPart::windowProc(HWND hWnd, UINT message, WPARAM wParam
 			gui_data.image_path = bildFileDialog(hWnd);
 			if (gui_data.image_path.compare("\0"))
 				g_pEventManager->Bild_oeffnen(gui_data.image_path, gui_data.width, gui_data.height);
-
-			// int Resultat; // Rückgabewert der Messagebox
-
-			// Messagebox für Sicherheitsabfrage
-			/*Resultat = MessageBox(hWnd, L"Wirklich beenden?",
-			L"Programm beenden",
-			MB_YESNO | MB_ICONQUESTION);
-
-			// Wurde "Ja" angeklickt?
-			if (Resultat == IDYES)
-			{
-			// Ja, also Programm beenden
-			PostQuitMessage(0);
-			return (0);
-
-			}
-
-			// Nein, also ganz normal weiter
-			return (0);*/
-			return 0;
+			// sonst ignoriert er ab hier Tastatureingaben
+			SetFocus(hauptfenster);
+			return 0;	
 		}
 		case ID_SEITENVERHAELTNIS:
 		{
 			// hier müsste an eig den State aus der Checkbox auslesen aber meeh ;)
 			gui_data.seitenverhaeltnis = !gui_data.seitenverhaeltnis;
 			g_pEventManager->Seitenverhaeltnis(gui_data.seitenverhaeltnis, gui_data.width, gui_data.height);
+			// sonst ignoriert er ab hier Tastatureingaben
+			SetFocus(hauptfenster);
 			return 0;
 		}
 		case ID_ANZEIGEN:
 		{
 			gui_data.anzeigen = !gui_data.anzeigen;
 			g_pEventManager->Anzeigen(gui_data.anzeigen);
+			// sonst ignoriert er ab hier Tastatureingaben
+			SetFocus(hauptfenster);
 			return 0;
 		}
 		} break;
@@ -609,7 +598,8 @@ LRESULT CALLBACK CWindowsPart::childProc(HWND hWnd, UINT message, WPARAM wParam,
 	{
 	case WM_DESTROY:
 	{
-					   return 0;
+		groesse_open = false;
+		return 0;
 	}
 	case WM_COMMAND:
 	{
