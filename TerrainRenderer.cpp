@@ -2,7 +2,7 @@
 
 TerrainRenderer::TerrainRenderer(SDL_Rect** camera, Tiles** map, const int& mapwidth):
 map(*map), mapwidth(mapwidth), camera(*camera) {
-	numspritex = this->camera->w / TILEWIDTH + 1;
+	numspritex = this->camera->w / TILEWIDTH + 2;
 	numspritey = this->camera->h / TILEHEIGHT + 1;
 
 	// Erzeuge neue Terrainsprites
