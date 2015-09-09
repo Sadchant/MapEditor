@@ -2,8 +2,8 @@
 
 TerrainRenderer::TerrainRenderer(SDL_Rect** camera, Tiles** map, const int& mapwidth):
 map(*map), mapwidth(mapwidth), camera(*camera) {
-	numspritex = /*this->camera->w*/1280 / TILEWIDTH + 1;		// TODO
-	numspritey = /*this->camera->h*/720 / TILEHEIGHT + 1;
+	numspritex = this->camera->w / TILEWIDTH + 1;
+	numspritey = this->camera->h / TILEHEIGHT + 1;
 
 	// Erzeuge neue Terrainsprites
 	spriteGrid = vector<CSprite>(numspritex*numspritey, CSprite(g_pLoader->getTexture("T_TEXTURSET1")));

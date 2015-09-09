@@ -1,15 +1,12 @@
 #include "SDLPart.h"
 
 CSDLPart::CSDLPart():
+camera({0,0,1280,720}),
 mapManager(&camera, &brushmanager, &map_mutex),
 brushmanager(),
 sdl_buttons(&brushmanager),
 backgroundImage(&camera)
 {
-	camera.x = 0;
-	camera.y = 0;
-	camera.w = 1280;
-	camera.h = 720;
 	g_pEventManager->InjectEventUser(this);
 }
 
