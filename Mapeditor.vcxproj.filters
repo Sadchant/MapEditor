@@ -129,7 +129,7 @@
       <Filter>Quelldateien</Filter>
     </ClCompile>
     <ClCompile Include="TerrainRenderer.cpp">
-      <Filter>Quelldateien\GUI/Input</Filter>
+      <Filter>Quelldateien\Map</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -251,7 +251,7 @@
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="TerrainRenderer.h">
-      <Filter>Headerdateien\GUI/Input</Filter>
+      <Filter>Headerdateien\Map</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
