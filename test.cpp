@@ -613,3 +613,27 @@ LRESULT CALLBACK ChildProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam
 	alteWinMain(hinstance);
 	return 0;
 }*/
+
+/*string bildFileDialog(HWND hWnd)
+{
+	string result = "\0";
+	LPWSTR filePath = (LPWSTR)calloc(sizeof(LPWSTR), 500);
+	OPENFILENAME ofn;
+
+	ZeroMemory(&ofn, sizeof(ofn));
+
+	ofn.lStructSize = sizeof(ofn);
+	ofn.hwndOwner = hWnd;
+	ofn.lpstrFilter = L"png Dateien (*.png)\0*.png\0Alle Dateien (*.*)\0*.*\0";
+	ofn.lpstrFile = filePath;
+	ofn.nMaxFile = MAX_PATH;
+	ofn.Flags = OFN_EXPLORER | OFN_FILEMUSTEXIST | OFN_HIDEREADONLY;
+	ofn.lpstrDefExt = L"png";
+
+	if (GetOpenFileName(&ofn))
+	{
+		result = ws2s(filePath);
+	}
+	free(filePath);
+	return result;
+}*/

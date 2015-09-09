@@ -109,6 +109,7 @@ void CBackgroundImage::Bild_oeffnen(string path, int map_width, int map_height)
 	filepath = path;
 	this->map_width = map_width;
 	this->map_height = map_height;
+	cout << "fertig" << endl;
 }
 
 

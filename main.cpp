@@ -2,7 +2,6 @@
 #include "SDLPart.h"
 #include "EventManager.h"
 #include <thread>
-#include "Sprite.h"
 
 void initButtons();
 void SDLThread(CSDLPart* windowsPart);
@@ -21,7 +20,6 @@ int main(int argc, char *argv[])
 	g_pEventManager->InjectEventUser(&sdlPart);
 	thread sdl_Thread (SDLThread, &sdlPart);
 
-	cout << sizeof(CSprite);
 	while (true)
 	{
 		windowsPart->HandleMessages();
