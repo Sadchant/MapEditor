@@ -5,7 +5,7 @@
 #include "Sprite.h"
 
 void initButtons();
-void SDLThread(CSDLPart* windowsPart);
+void SDLThread(CSDLPart* windowsPart, boolean* window_alive);
 
 using namespace std;
 
@@ -19,24 +19,29 @@ int main(int argc, char *argv[])
 	g_pFramework->Init(windowsPart->Get_SDL_area());
 	CSDLPart sdlPart = CSDLPart();
 	g_pEventManager->InjectEventUser(&sdlPart);
-	thread sdl_Thread (SDLThread, &sdlPart);
+
+	boolean window_alive = true;
+	thread sdl_Thread (SDLThread, &sdlPart, &window_alive);
 
 	cout << sizeof(CSprite);
-	while (true)
+	while (window_alive)
 	{
-		windowsPart->HandleMessages();
+		window_alive = windowsPart->HandleMessages();
 	}
+	// Ende der Schleife: Fenster wurde geschlossen. Stoppe SDL-Thread:
+	window_alive = false;
 	
 	//g_pFramework->Quit();	
 	sdl_Thread.join();
 	delete windowsPart;
+	cout << "\n\nApplication terminated properly." << endl;
 	return 0;
 }
 
-void SDLThread(CSDLPart* sdlPart)
+void SDLThread(CSDLPart* sdlPart, boolean* window_alive)
 {
 	
-	while (true)
+	while (*window_alive)
 	{
 		sdlPart->HandleSDL();
 	}
