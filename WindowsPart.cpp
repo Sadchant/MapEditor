@@ -2,17 +2,15 @@
 
 CWindowsPart::CWindowsPart(HINSTANCE hInst)
 {
-	HWND hWnd;   // Fenster-Handle
-
 	// Hauptfenster erstellen
-	hWnd = erstelleHauptfenster(hInst);
+	hauptfenster = erstelleHauptfenster(hInst);
 
 	// Prüfen, ob alles glatt ging
-	if (hWnd == NULL)
+	if (hauptfenster == NULL)
 		cout << "KRACHBUMM boeser Fehler beim Fenster-Erzeugen!" << endl;
 
 	// Alle Steuerelemente erstellen
-	erstelleSteuerelemente(hWnd, hInst);
+	erstelleSteuerelemente(hauptfenster, hInst);
 
 	//string exepath = ExePath();
 	zeiger_auf_Instanz = this;
@@ -146,7 +144,6 @@ void CWindowsPart::erstelleSteuerelemente(HWND hWnd, HINSTANCE hInst)
 	AppendMenu(menu, MF_STRING, ID_MENU_OEFFNEN, L"Map öffnen");
 	AppendMenu(menu, MF_STRING, ID_MENU_SPEICHERN, L"Map speichern");
 	AppendMenu(menu, MF_STRING, ID_MENU_SPEICHERN_UNTER, L"Map speichern unter");
-	AppendMenu(menu, MF_STRING, ID_BILDOEFFNEN, L"Hintergrundbild öffnen");
 
 	SetMenu(hWnd, hMenubar);
 
@@ -431,6 +428,8 @@ LRESULT CALLBACK CWindowsPart::windowProc(HWND hWnd, UINT message, WPARAM wParam
 			gui_data.image_path = bildFileDialog(hWnd);
 			if (gui_data.image_path.compare("\0"))
 				g_pEventManager->Bild_oeffnen(gui_data.image_path, gui_data.width, gui_data.height);
+			// sonst ignoriert er ab hier Tastatureingaben
+			SetFocus(hauptfenster);
 			return 0;	
 		}
 		case ID_SEITENVERHAELTNIS:
@@ -438,12 +437,16 @@ LRESULT CALLBACK CWindowsPart::windowProc(HWND hWnd, UINT message, WPARAM wParam
 			// hier müsste an eig den State aus der Checkbox auslesen aber meeh ;)
 			gui_data.seitenverhaeltnis = !gui_data.seitenverhaeltnis;
 			g_pEventManager->Seitenverhaeltnis(gui_data.seitenverhaeltnis, gui_data.width, gui_data.height);
+			// sonst ignoriert er ab hier Tastatureingaben
+			SetFocus(hauptfenster);
 			return 0;
 		}
 		case ID_ANZEIGEN:
 		{
 			gui_data.anzeigen = !gui_data.anzeigen;
 			g_pEventManager->Anzeigen(gui_data.anzeigen);
+			// sonst ignoriert er ab hier Tastatureingaben
+			SetFocus(hauptfenster);
 			return 0;
 		}
 		} break;
@@ -532,7 +535,6 @@ void CWindowsPart::ManageKey(int key_code, bool pressed, HWND hWnd)
 	}break;
 	case VK_UP:
 	{
-		cout << "UP" << endl;
 		g_pKeyMouseManager->Change_Key_Status(ME_KEY_UP, pressed);
 	}break;
 	case VK_DOWN:
