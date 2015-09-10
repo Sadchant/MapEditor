@@ -11,6 +11,7 @@ border_13(g_pLoader->getTexture("T_13")),
 border_15(g_pLoader->getTexture("T_15"))
 {	
 	fillVector();	
+	loadBrushes();
 }
 
 void CGroundRadiusManager::Init(SDL_Rect* camera, int tile_width, int tile_height, int numTilesX)
@@ -85,6 +86,10 @@ int CGroundRadiusManager::GetNextElement()
 	tempZahl = *it_aktRadius;
 	it_aktRadius++;
 	return tempZahl;
+}
+
+vector<int> CGroundRadiusManager::getTargetArea() {
+	return brushes[aktRadius / 2].pos;
 }
 
 
@@ -163,8 +168,40 @@ void CGroundRadiusManager::RenderBrushBorder(int mouseX, int mouseY)
 {
 	borderXPos = ((camera->x + mouseX) / tile_width)*tile_width - tile_width*(aktRadius / 2) - 1 - camera->x;
 	borderYPos = ((camera->y + mouseY) / tile_height)*tile_height - tile_height*(aktRadius / 2) - 1 - camera->y;
-	aktBorder->SetPos(borderXPos, borderYPos);
-	aktBorder->Render();
+	/*aktBorder->SetPos(borderXPos, borderYPos);
+	aktBorder->Render();*/
+	brushes[aktRadius / 2].sprite.SetPos(borderXPos, borderYPos);
+	brushes[aktRadius / 2].sprite.Render();
 }
 
-	
+void CGroundRadiusManager::loadBrushes() {
+	brushes.clear();
+	string fileName = "Editor_Data/Radius.radius";
+	ifstream radiusData(fileName);
+	if (!radiusData.is_open())
+	{
+		printf("%s konnte nicht geoeffnet werden!", fileName);
+		cout << " ";
+		return;
+	}
+	int current_radius = -1, last_radius = -1;
+	int row, col, count;
+	while (!radiusData.eof())
+	{
+		radiusData >> current_radius;
+		radiusData >> row;
+		radiusData >> col;
+		radiusData >> count;
+		
+		if (current_radius != last_radius) {
+			CSprite tmp(g_pLoader->getTexture(string("T_") + to_string(current_radius)));
+			brushes.push_back({ vector<int>(), tmp }); // TODO
+		}
+		//	brushes.push_back({ vector<int>(), CSprite(g_pLoader->getTexture("T_" + current_radius)) });
+			
+		for (int i = 0; i < count; i++)
+			brushes[current_radius/2].pos.push_back(row*numTilesX + col + i);
+		last_radius = current_radius;
+	}
+	radiusData.close();
+}

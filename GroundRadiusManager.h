@@ -17,14 +17,20 @@ public:
 	void Init(SDL_Rect* camera, int tile_width, int tile_height, int numTilesX);
 	int HasNextElement();
 	int GetNextElement(); // gibt den aktuellen Radius zurück und schaltet den iterator eins weiter
+	vector<int> getTargetArea();	// Gibt alle Positionen die vom Pinsel getroffen werden in Indexform zurück.
 
 	void RenderBrushBorder(int mouseX, int mouseY);
 	void SelectAktBorder(int radius);
 
 private:
+	struct Brush {
+		vector<int> pos;
+		CSprite sprite;
+	};
 	void fillVector();
 	void AddRowtoVector(int row, int column, int number);
 	void ClearAllVectors();
+	void loadBrushes();
 
 	SDL_Rect* camera;
 	vector<int>  radius_1;
@@ -57,6 +63,8 @@ private:
 	int tile_height;
 
 	vector<int> vecRadiusData;
+
+	vector<Brush> brushes;
 	
 };
 
