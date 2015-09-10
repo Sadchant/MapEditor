@@ -13,6 +13,9 @@
 #include "KeyMouseManager.h"
 #include "EventManager.h"
 
+#define WINDOW_WIDTH 1920
+#define WINDOW_HEIGHT 839
+
 
 
 #define ID_GROESSEAENDERN		4002
@@ -37,10 +40,10 @@
 #define MAP_INIT_HEIGHT 16
 #define MAP_MIN_WIDTH 29
 #define MAP_MIN_HEIGHT 16
-#define MAP_MAX_WIDTH 1800
-#define MAP_MAX_HEIGHT 1800
+#define MAP_MAX_WIDTH 5000
+#define MAP_MAX_HEIGHT 5000
 
-#define FENSTERNAME L"Map Editor 1.11"
+#define FENSTERNAME L"Map Editor 1.12"
 
 #define IS_DOWN(x) (GetKeyState(x) & 0x8000)
 
