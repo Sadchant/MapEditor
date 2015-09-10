@@ -32,7 +32,6 @@ int main(int argc, char *argv[])
 	//g_pFramework->Quit();	
 	sdl_Thread.join();
 	delete windowsPart;
-	cout << "\n\nApplication terminated properly." << endl;
 	return 0;
 }
 

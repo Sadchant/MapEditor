@@ -112,7 +112,7 @@ HWND CWindowsPart::erstelleHauptfenster(HINSTANCE hInst)
 		//WS_OVERLAPPEDWINDOW | WS_VISIBLE,
 		WS_VISIBLE | WS_OVERLAPPED | WS_MINIMIZEBOX | WS_SYSMENU,
 		0, 50,
-		1920, 839,
+		WINDOW_WIDTH, WINDOW_HEIGHT,
 		//550, 120,
 		NULL,
 		NULL,
@@ -455,39 +455,47 @@ LRESULT CALLBACK CWindowsPart::windowProc(HWND hWnd, UINT message, WPARAM wParam
 	case WM_LBUTTONDOWN:
 	{
 		g_pKeyMouseManager->PressMouseKey(ME_MOUSE_LEFT);
-		g_pEventManager->HandleKlickEvent(ME_MOUSE_LEFT, GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) - WINDOWSGUI_HEIGHT);		
+		g_pEventManager->HandleKlickEvent(ME_MOUSE_LEFT, GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) - WINDOWSGUI_HEIGHT);
+		// damit das Programm mitbekommt, wenn die Maus außerhalb des Fensters losgelassen wird
+		SetCapture(hauptfenster);
 	}break;
 
 	// linke Maustatse losgelassen
 	case WM_LBUTTONUP:
 	{
 		g_pKeyMouseManager->ReleaseMouseKey(ME_MOUSE_LEFT);
+		// stellt den normalen Maus-Modus wieder her
+		ReleaseCapture();
 	}break;
 
 	// mittlere Maustatse gedrückt
 	case WM_MBUTTONDOWN:
 	{
 		g_pKeyMouseManager->PressMouseKey(ME_MOUSE_MIDDLE);
-		g_pEventManager->HandleKlickEvent(ME_MOUSE_MIDDLE, GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) - WINDOWSGUI_HEIGHT);		
+		g_pEventManager->HandleKlickEvent(ME_MOUSE_MIDDLE, GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) - WINDOWSGUI_HEIGHT);
+		SetCapture(hauptfenster);
 	}break;
 
 	// mittlere Maustaste losgelassen
 	case WM_MBUTTONUP:
 	{
 		g_pKeyMouseManager->ReleaseMouseKey(ME_MOUSE_MIDDLE);
+		ReleaseCapture();
 	}break;
 
 	// rechte Maustaste gedrückt
 	case WM_RBUTTONDOWN:
 	{
 		g_pKeyMouseManager->PressMouseKey(ME_MOUSE_RIGHT);
-		g_pEventManager->HandleKlickEvent(ME_MOUSE_RIGHT, GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) - WINDOWSGUI_HEIGHT);		
+		g_pEventManager->HandleKlickEvent(ME_MOUSE_RIGHT, GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) - WINDOWSGUI_HEIGHT);
+		SetCapture(hauptfenster);
 	}break;
 
 	// rechte Maustaste losgelassen
 	case WM_RBUTTONUP:
 	{
 		g_pKeyMouseManager->ReleaseMouseKey(ME_MOUSE_RIGHT);
+		ReleaseCapture();
 	}break;
 
 	// Mausrad gedreht
@@ -504,10 +512,12 @@ LRESULT CALLBACK CWindowsPart::windowProc(HWND hWnd, UINT message, WPARAM wParam
 	case WM_KEYDOWN:
 	{
 		ManageKey(wParam, true, hWnd);
+		return 0;
 	}break;
 	case WM_KEYUP:
 	{
 		ManageKey(wParam, false, hWnd);
+		return 0;
 	}
 	}
 
