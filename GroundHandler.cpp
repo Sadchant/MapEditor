@@ -26,7 +26,7 @@ void CGroundHandler::Neue_map(int width, int height)
 		map[i].lowerTileType = 0 + GetRandom()*16;
 		for (int j = 0; j < NUMUPST; j++)
 		{
-			map[i].upperTileTypes[j] = -1;
+			map[i].upperTileTypes[j] = 0;
 		}
 	}
 
@@ -119,7 +119,7 @@ void CGroundHandler::Change_groesse(int width, int height, int aktBackgroundId)
 			oldindex = i*oldnumTilesX + j;
 			// sollte die neue Map größer sein, müssen die neuen Felder mit dem Hintegrund neu belegt werden
 			if ((oldindex >= oldnumTiles) || (j >= oldnumTilesX))
-				map[i*numTilesX + j] = Tiles{ aktBackgroundId + GetRandom()*16, { -1, -1, -1, -1 } };
+				map[i*numTilesX + j] = Tiles{ aktBackgroundId + GetRandom() * 16, { aktBackgroundId, aktBackgroundId, aktBackgroundId, aktBackgroundId } };
 			else
 				// ansonsten wir der alte wert kopiert
 				map[i*numTilesX + j] = oldMap[oldindex];
@@ -136,8 +136,12 @@ void CGroundHandler::SetNewBackGround(int id)
 {
 	for (int i = 0; i < numTiles; i++)
 	{
-		if ((map[i].lowerTileType >= aktBackgroundId) && (map[i].lowerTileType < aktBackgroundId + 64))
-			map[i].lowerTileType = id + GetRandom()*16;
+		if ((map[i].lowerTileType >= aktBackgroundId) && (map[i].lowerTileType < aktBackgroundId + 64)) {
+			map[i].lowerTileType = id + GetRandom() * 16;
+			for (int j = 0; j < 4; j++) {
+				map[i].upperTileTypes[j] = id;
+			}
+		}
 	}
 	aktBackgroundId = id ;
 }
@@ -236,20 +240,20 @@ void CGroundHandler::DrawField(int index, int id)
 {
 	if ((index < 0) || (index >= numTiles))
 		return;
-	id -= id%64;
-	if (map[index].lowerTileType / 64 == id)
-		return;
+	//id -= id%64;
+	if (map[index].lowerTileType / 64 != id / 64)
 		map[index].lowerTileType = id + (rand() % 4) * 16;
+	updateTileSeam(index);
 }
 
 void CGroundHandler::updateTileSeam(int index) {
 	// Terrain-Basis-Id's der angrenzenden Felder (Variationen vereint)
-	int adjacent_TerrainId[4] = {	map[index + numTilesX].lowerTileType % 64,
-									map[index + 1].lowerTileType % 64,
-									map[index - numTilesX].lowerTileType % 64,
-									map[index - 1].lowerTileType % 64 };
+	int adjacent_TerrainId[4] = {	map[index + numTilesX].lowerTileType / 64,
+									map[index + 1].lowerTileType / 64,
+									map[index - numTilesX].lowerTileType / 64,
+									map[index - 1].lowerTileType / 64 };
 	// Terrain-Basis-ID's der angrenzenden Felder, von den aktuellen Rahmensprites ausgehend
-	int current_Seam[4] = { 0 };
+	int current_Seam[4] = { -1, -1, -1, -1 };
 	Tiles& current = map[index];
 
 	// Berechne aus den aktuellen Sprite-ID's welche Tex-BaseID die benachbarten Felder haben sollten, iteriere dazu über alle aktuellen Rahmen-Sprites
@@ -264,20 +268,20 @@ void CGroundHandler::updateTileSeam(int index) {
 
 		// Ränder bei Shape > 3
 		if (tmp_shape > 3)
-			current_Seam[tmp_shape % 4] = current.upperTileTypes[tmp_shape % 4] % 64;
+			current_Seam[tmp_shape % 4] = current.upperTileTypes[i] / 64;
 		if (tmp_shape > 7)
-			current_Seam[(tmp_shape + 1) % 4] = current.upperTileTypes[tmp_shape % 4] % 64;
+			current_Seam[(tmp_shape + 1) % 4] = current.upperTileTypes[i] / 64;
 		if (tmp_shape > 11)
-			current_Seam[(tmp_shape + 2) % 4] = current.upperTileTypes[tmp_shape % 4] % 64;
+			current_Seam[(tmp_shape + 2) % 4] = current.upperTileTypes[i] / 64;
 		if (tmp_shape == 1)
-			for (int j = 0; j < 4; j++) current_Seam[j] = current.upperTileTypes[0] % 64;
+			for (int j = 0; j < 4; j++) current_Seam[j] = current.upperTileTypes[i] / 64;
 		if (tmp_shape == 2) {
-			current_Seam[0] = current.upperTileTypes[0] % 64;
-			current_Seam[2] = current.upperTileTypes[0] % 64;
+			current_Seam[0] = current.upperTileTypes[i] / 64;
+			current_Seam[2] = current.upperTileTypes[i] / 64;
 		}
 		if (tmp_shape == 3) {
-			current_Seam[1] = current.upperTileTypes[1] % 64;
-			current_Seam[3] = current.upperTileTypes[1] % 64;
+			current_Seam[1] = current.upperTileTypes[i] / 64;
+			current_Seam[3] = current.upperTileTypes[i] / 64;
 		}
 	}
 	// Nun können die Rahmentexturen mit den tatsächlichen benachbarten Texturen abgeglichen werden
@@ -292,6 +296,10 @@ void CGroundHandler::updateTileSeam(int index) {
 	else {
 		// Generiere neue ID's für die Rahmensprites
 		// TODO
+		for (int i = 0; i < 4; i++) {
+			if (adjacent_TerrainId[i] != current.lowerTileType)
+				current.upperTileTypes[i] = adjacent_TerrainId[i]*64 + 4 + i;
+		}
 	}
 }
 

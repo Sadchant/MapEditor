@@ -24,9 +24,9 @@ void TerrainRenderer::Render() {
 			
 			// Dito für die Rand-Sprites
 			for (int k = 0; k < NUMUPST; k++) {
-				if (map[mapPosition].upperTileTypes[k] > -1) {
+				if (map[mapPosition].upperTileTypes[k] % 16 > 0) {
 					upperSpriteGrid[k][j*numspritex + i].SetPos(i*TILEWIDTH - CAM_OFFSET_X, j*TILEHEIGHT - CAM_OFFSET_Y);
-					upperSpriteGrid[k][j*numspritex + i].Render((map[mapPosition].lowerTileType) % 4, (map[mapPosition].upperTileTypes[k]) / 4);
+					upperSpriteGrid[k][j*numspritex + i].Render(map[mapPosition].upperTileTypes[k]);
 				}
 			}
 
