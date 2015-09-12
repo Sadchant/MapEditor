@@ -241,9 +241,16 @@ void CGroundHandler::DrawField(int index, int id)
 	if ((index < 0) || (index >= numTiles))
 		return;
 	//id -= id%64;
-	if (map[index].lowerTileType / 64 != id / 64)
+	if (map[index].lowerTileType / 64 != id / 64) {
 		map[index].lowerTileType = id + (rand() % 4) * 16;
+		for (int i = 0; i < 4; i++)
+			map[index].upperTileTypes[i] = id;
+	}
 	updateTileSeam(index);
+	updateTileSeam(index + numTilesX);
+	updateTileSeam(index + 1);
+	updateTileSeam(index - numTilesX);
+	updateTileSeam(index - 1);
 }
 
 void CGroundHandler::updateTileSeam(int index) {
@@ -257,7 +264,7 @@ void CGroundHandler::updateTileSeam(int index) {
 	Tiles& current = map[index];
 
 	// Berechne aus den aktuellen Sprite-ID's welche Tex-BaseID die benachbarten Felder haben sollten, iteriere dazu über alle aktuellen Rahmen-Sprites
-	for (int i = 0; i < 4; i++) {
+	/*for (int i = 0; i < 4; i++) {
 		// 'Form' des aktuellen Rahmensprites
 		// 0 kein Rahmen/inaktiv;			1 überall gleicher Rahmen
 		// 2 oben + unten gleicher Rand		3 links + rechts gleicher Rand
@@ -300,6 +307,12 @@ void CGroundHandler::updateTileSeam(int index) {
 			if (adjacent_TerrainId[i] != current.lowerTileType)
 				current.upperTileTypes[i] = adjacent_TerrainId[i]*64 + 4 + i;
 		}
+	}*/
+	for (int i = 0; i < 4; i++) {
+		if (adjacent_TerrainId[i] == current.lowerTileType / 64)
+			current.upperTileTypes[i] = current.lowerTileType;
+		else if (adjacent_TerrainId[i] < current.lowerTileType / 64)
+			current.upperTileTypes[i] = adjacent_TerrainId[i] * 64 + 4 + i;
 	}
 }
 
