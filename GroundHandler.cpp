@@ -242,11 +242,55 @@ void CGroundHandler::DrawField(int index, int id)
 }
 
 void CGroundHandler::updateTileSeam(int index) {
-	Tiles adjacent[4] = { map[index + numTilesX], map[index + 1], map[index - numTilesX], map[index - 1] };
+	// Terrain-Basis-Id's der angrenzenden Felder (Variationen vereint)
+	int adjacent_TerrainId[4] = {	map[index + numTilesX].lowerTileType % 64,
+									map[index + 1].lowerTileType % 64,
+									map[index - numTilesX].lowerTileType % 64,
+									map[index - 1].lowerTileType % 64 };
+	// Terrain-Basis-ID's der angrenzenden Felder, von den aktuellen Rahmensprites ausgehend
+	int current_Seam[4] = { 0 };
 	Tiles& current = map[index];
+
+	// Berechne aus den aktuellen Sprite-ID's welche Tex-BaseID die benachbarten Felder haben sollten, iteriere dazu über alle aktuellen Rahmen-Sprites
 	for (int i = 0; i < 4; i++) {
-		if (current.upperTileTypes[i] % 16 != adjacent[i].lowerTileType % 16)
-			current.upperTileTypes[i] = adjacent[i].lowerTileType + 4 + i;
+		// 'Form' des aktuellen Rahmensprites
+		// 0 kein Rahmen/inaktiv;			1 überall gleicher Rahmen
+		// 2 oben + unten gleicher Rand		3 links + rechts gleicher Rand
+		// 4-7 einfacher Rand unten/rechts/oben/links
+		// 8-11 gleicher Rand unten+rechts/rechts+oben/oben+links/links+unten
+		// 12-15 gleicher Rand unten+rechts+oben/rechts+oben+links/oben+links+unten/links+unten+rechts
+		int tmp_shape = current.upperTileTypes[i] % 16;
+
+		// Ränder bei Shape > 3
+		if (tmp_shape > 3)
+			current_Seam[tmp_shape % 4] = current.upperTileTypes[tmp_shape % 4] % 64;
+		if (tmp_shape > 7)
+			current_Seam[(tmp_shape + 1) % 4] = current.upperTileTypes[tmp_shape % 4] % 64;
+		if (tmp_shape > 11)
+			current_Seam[(tmp_shape + 2) % 4] = current.upperTileTypes[tmp_shape % 4] % 64;
+		if (tmp_shape == 1)
+			for (int j = 0; j < 4; j++) current_Seam[j] = current.upperTileTypes[0] % 64;
+		if (tmp_shape == 2) {
+			current_Seam[0] = current.upperTileTypes[0] % 64;
+			current_Seam[2] = current.upperTileTypes[0] % 64;
+		}
+		if (tmp_shape == 3) {
+			current_Seam[1] = current.upperTileTypes[1] % 64;
+			current_Seam[3] = current.upperTileTypes[1] % 64;
+		}
+	}
+	// Nun können die Rahmentexturen mit den tatsächlichen benachbarten Texturen abgeglichen werden
+
+	bool equal = true;
+	for (int i = 0; i < 4; i++)
+		if (current_Seam[i] != adjacent_TerrainId[i])
+			equal = false;
+
+	if (equal)
+		return;
+	else {
+		// Generiere neue ID's für die Rahmensprites
+		// TODO
 	}
 }
 
