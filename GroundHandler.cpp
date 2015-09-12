@@ -136,8 +136,8 @@ void CGroundHandler::SetNewBackGround(int id)
 {
 	for (int i = 0; i < numTiles; i++)
 	{
-		if ((map[i].lowerTileType >= aktBackgroundId) && (map[i].lowerTileType <= aktBackgroundId + 4))
-			map[i].lowerTileType = id+ GetRandom();
+		if ((map[i].lowerTileType >= aktBackgroundId) && (map[i].lowerTileType < aktBackgroundId + 64))
+			map[i].lowerTileType = id + GetRandom()*16;
 	}
 	aktBackgroundId = id ;
 }
@@ -236,9 +236,10 @@ void CGroundHandler::DrawField(int index, int id)
 {
 	if ((index < 0) || (index >= numTiles))
 		return;
-	if ((map[index].lowerTileType >= id) && (map[index].lowerTileType < id + 4))
+	id -= id%64;
+	if (map[index].lowerTileType / 64 == id)
 		return;
-	map[index].lowerTileType = id + rand() % 4;
+		map[index].lowerTileType = id + (rand() % 4) * 16;
 }
 
 void CGroundHandler::updateTileSeam(int index) {
