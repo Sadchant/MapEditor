@@ -89,7 +89,7 @@ int CButtonPage_BODEN::Generate_boden_standard(int start_y)
 			akt_x = x_start;
 		}
 		buttonRect = { akt_x, akt_y, buttonWidth, buttonHeight };
-		CBrushButton akt_Button = CBrushButton(i * 50, BODEN, buttonRect, g_pLoader->getTexture("T_TEXTURSETMENU"), g_pLoader->getTexture("T_BUTTONBORDER"));
+		CBrushButton akt_Button = CBrushButton(i * 64, BODEN, buttonRect, g_pLoader->getTexture("T_TEXTURSETMENU"), g_pLoader->getTexture("T_BUTTONBORDER"));
 		boden_standard.push_back(akt_Button);
 		akt_x += abstand;
 	}

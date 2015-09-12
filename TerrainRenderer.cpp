@@ -20,7 +20,7 @@ void TerrainRenderer::Render() {
 			// Positioniere den Sprite inklusive dem offset der Kamera auf dem Tileraster
 			spriteGrid[j*numspritex + i].SetPos(i*TILEWIDTH-CAM_OFFSET_X, j*TILEHEIGHT-CAM_OFFSET_Y);
 			// Render-Aufruf, magic by Sadchant
-			spriteGrid[j*numspritex + i].Render(map[mapPosition].lowerTileType % 4, map[mapPosition].lowerTileType / 50);
+			spriteGrid[j*numspritex + i].Render(map[mapPosition].lowerTileType);
 			
 			// Dito für die Rand-Sprites
 			for (int k = 0; k < NUMUPST; k++) {

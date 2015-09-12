@@ -34,6 +34,7 @@ private:
 	void DrawModus2(int index, int radius, int id);
 	void DrawModus3(int index, int radius, int id);
 	void DrawField(int index, int id);
+	void updateTileSeam(int index);
 
 	Tiles* map;
 	int numTiles;

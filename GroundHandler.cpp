@@ -23,7 +23,7 @@ void CGroundHandler::Neue_map(int width, int height)
 	map = new Tiles[numTiles];
 	for (int i = 0; i < numTiles; i++)
 	{
-		map[i].lowerTileType = 0 + GetRandom();
+		map[i].lowerTileType = 0 + GetRandom()*16;
 		for (int j = 0; j < NUMUPST; j++)
 		{
 			map[i].upperTileTypes[j] = -1;
@@ -119,7 +119,7 @@ void CGroundHandler::Change_groesse(int width, int height, int aktBackgroundId)
 			oldindex = i*oldnumTilesX + j;
 			// sollte die neue Map größer sein, müssen die neuen Felder mit dem Hintegrund neu belegt werden
 			if ((oldindex >= oldnumTiles) || (j >= oldnumTilesX))
-				map[i*numTilesX + j] = Tiles{ aktBackgroundId + GetRandom(), { -1, -1, -1, -1 } };
+				map[i*numTilesX + j] = Tiles{ aktBackgroundId + GetRandom()*16, { -1, -1, -1, -1 } };
 			else
 				// ansonsten wir der alte wert kopiert
 				map[i*numTilesX + j] = oldMap[oldindex];
@@ -239,5 +239,14 @@ void CGroundHandler::DrawField(int index, int id)
 	if ((map[index].lowerTileType >= id) && (map[index].lowerTileType < id + 4))
 		return;
 	map[index].lowerTileType = id + rand() % 4;
+}
+
+void CGroundHandler::updateTileSeam(int index) {
+	Tiles adjacent[4] = { map[index + numTilesX], map[index + 1], map[index - numTilesX], map[index - 1] };
+	Tiles& current = map[index];
+	for (int i = 0; i < 4; i++) {
+		if (current.upperTileTypes[i] % 16 != adjacent[i].lowerTileType % 16)
+			current.upperTileTypes[i] = adjacent[i].lowerTileType + 4 + i;
+	}
 }
 

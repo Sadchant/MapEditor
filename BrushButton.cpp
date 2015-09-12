@@ -76,7 +76,7 @@ void CBrushButton::Render()
 	{
 	case BODEN:
 	{
-		textur.Render(0, draw_Brush.id / 50);
+		textur.Render(draw_Brush.id);
 
 	}
 	}
