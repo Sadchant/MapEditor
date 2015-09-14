@@ -247,72 +247,112 @@ void CGroundHandler::DrawField(int index, int id)
 			map[index].upperTileTypes[i] = id;
 	}
 	updateTileSeam(index);
-	updateTileSeam(index + numTilesX);
-	updateTileSeam(index + 1);
-	updateTileSeam(index - numTilesX);
-	updateTileSeam(index - 1);
+	updateTileSeam(min(index + numTilesX, numTiles-1));
+	updateTileSeam(min(index + 1, numTiles-1));
+	updateTileSeam(max(index - numTilesX, 0));
+	updateTileSeam(max(index - 1, 0));
 }
 
 void CGroundHandler::updateTileSeam(int index) {
-	// Terrain-Basis-Id's der angrenzenden Felder (Variationen vereint)
-	int adjacent_TerrainId[4] = {	map[index + numTilesX].lowerTileType / 64,
-									map[index + 1].lowerTileType / 64,
-									map[index - numTilesX].lowerTileType / 64,
-									map[index - 1].lowerTileType / 64 };
-	// Terrain-Basis-ID's der angrenzenden Felder, von den aktuellen Rahmensprites ausgehend
-	int current_Seam[4] = { -1, -1, -1, -1 };
+	if (index < 0 || index >= numTiles)
+		return;
+
 	Tiles& current = map[index];
+	// Terrain-Basis-Id's der angrenzenden Felder (Variationen vereint)
+	int adjacent_TerrainId[4] = {	map[min(index + numTilesX, numTiles-1)].lowerTileType / 64,
+									map[min(index + 1, numTiles-1)].lowerTileType / 64,
+									map[max(index - numTilesX, 0)].lowerTileType / 64,
+									map[max(index - 1, 0)].lowerTileType / 64 };
+	// Terrain-Basis-ID's der angrenzenden Felder, von den aktuellen Rahmensprites ausgehend
+	int seamTerrainID[4] = {	current.lowerTileType/64,
+								current.lowerTileType/64,
+								current.lowerTileType/64,
+								current.lowerTileType/64 };
 
-	// Berechne aus den aktuellen Sprite-ID's welche Tex-BaseID die benachbarten Felder haben sollten, iteriere dazu über alle aktuellen Rahmen-Sprites
-	/*for (int i = 0; i < 4; i++) {
-		// 'Form' des aktuellen Rahmensprites
-		// 0 kein Rahmen/inaktiv;			1 überall gleicher Rahmen
-		// 2 oben + unten gleicher Rand		3 links + rechts gleicher Rand
-		// 4-7 einfacher Rand unten/rechts/oben/links
-		// 8-11 gleicher Rand unten+rechts/rechts+oben/oben+links/links+unten
-		// 12-15 gleicher Rand unten+rechts+oben/rechts+oben+links/oben+links+unten/links+unten+rechts
-		int tmp_shape = current.upperTileTypes[i] % 16;
+	// For-Schleife: Bestimme Nachbarfarben, wenns nach den aktuellen Sprites geht
+	for (int i = 0; i < 4; i++) {
+		int shape = current.upperTileTypes[i] % 16;
+		int color = current.upperTileTypes[i] / 64;
+		switch (shape) {
+		case 1:										// Alle Kanten gleiche Farbe
+			seamTerrainID[(i + 3) % 4] = color;			// Kante links der aktuellen Kante
+		case 12: case 13: case 14: case 15:			// U-Form mit den nächsten beiden Kanten gegen Uhrzeigersinn
+			seamTerrainID[(i + 2) % 4] = color;			// Kante gegenüber der aktuellen Kante
+		case 8: case 9: case 10: case 11:			// L-Form mit der nächsten Kante gegen Uhrzeigersinn
+			seamTerrainID[(i + 1) % 4] = color;			// Kante rechts der aktuellen Kante
+		case 4: case 5: case 6: case 7:				// nur aktuelle Kante
+			seamTerrainID[i] = color;					// aktuelle Kante
+		break;
 
-		// Ränder bei Shape > 3
-		if (tmp_shape > 3)
-			current_Seam[tmp_shape % 4] = current.upperTileTypes[i] / 64;
-		if (tmp_shape > 7)
-			current_Seam[(tmp_shape + 1) % 4] = current.upperTileTypes[i] / 64;
-		if (tmp_shape > 11)
-			current_Seam[(tmp_shape + 2) % 4] = current.upperTileTypes[i] / 64;
-		if (tmp_shape == 1)
-			for (int j = 0; j < 4; j++) current_Seam[j] = current.upperTileTypes[i] / 64;
-		if (tmp_shape == 2) {
-			current_Seam[0] = current.upperTileTypes[i] / 64;
-			current_Seam[2] = current.upperTileTypes[i] / 64;
-		}
-		if (tmp_shape == 3) {
-			current_Seam[1] = current.upperTileTypes[i] / 64;
-			current_Seam[3] = current.upperTileTypes[i] / 64;
+		case 2: case 3:								// Aktuelle und gegenüberliegende Kante
+			seamTerrainID[i] = color;					// aktuelle Kante
+			seamTerrainID[(i + 2) % 4] = color;			// gegenüberliegende Kante
+		// sonst shape 0 -> Kein Rand
+		default:
+			;
 		}
 	}
-	// Nun können die Rahmentexturen mit den tatsächlichen benachbarten Texturen abgeglichen werden
 
-	bool equal = true;
+	// Brich ab wenn Sprites ok sind
+	// TODO
+	bool correct_seam = true;
 	for (int i = 0; i < 4; i++)
-		if (current_Seam[i] != adjacent_TerrainId[i])
-			equal = false;
+		if (adjacent_TerrainId[i] == seamTerrainID[i] ||
+			(adjacent_TerrainId[i] > current.lowerTileType / 64 && current.upperTileTypes[i]%16 == 0))
+			;// Rand stimmt mit Nachbarn überein ODER (Kein Übergang benötigt UND Sprite ist deaktiviert)
+		else
+			correct_seam = false;
+	if (correct_seam) {
+		;// return;
+	}
 
-	if (equal)
+	// sonst generiere neue Sprites
+
+	// Sonderfall: Alle angrenzenden Felder sind gleich, aber aktuelles Feld ist anders
+	bool alle_gleich = true;
+	for (int i = 1; i < 4; i++)
+		if (adjacent_TerrainId[i] != adjacent_TerrainId[0])
+			alle_gleich = false;
+	if (alle_gleich && current.lowerTileType/64 != adjacent_TerrainId[0]) {
+		current.upperTileTypes[0] = adjacent_TerrainId[0] * 64 + 1;
+		for (int i = 1; i < 4; i++)
+			current.upperTileTypes[i] = adjacent_TerrainId[0]*64;
 		return;
-	else {
-		// Generiere neue ID's für die Rahmensprites
-		// TODO
-		for (int i = 0; i < 4; i++) {
-			if (adjacent_TerrainId[i] != current.lowerTileType)
-				current.upperTileTypes[i] = adjacent_TerrainId[i]*64 + 4 + i;
-		}
-	}*/
+	}
+
+	// Ansonsten generiere Ecksprites da, wo die Ecke beginnt (Position am weitesten im Uhrzeigersinn)
 	for (int i = 0; i < 4; i++) {
-		if (adjacent_TerrainId[i] == current.lowerTileType / 64)
-			current.upperTileTypes[i] = current.lowerTileType;
+		// Farbe ist entweder gleich dem Nachbarn oder es muss keine Kante erzeugt werden
+		if (adjacent_TerrainId[i] >= current.lowerTileType / 64) {
+			current.upperTileTypes[i] = adjacent_TerrainId[i] * 64;
+			continue;
+		}
+
+		if (adjacent_TerrainId[i] != adjacent_TerrainId[(i - 1) % 4]) {		// An aktueller Position beginnt eine Ecke
+			if (adjacent_TerrainId[i] == adjacent_TerrainId[(i + 1) % 4]) { // Die mindestens zwei lang ist
+				if (adjacent_TerrainId[i] == adjacent_TerrainId[(i + 2) % 4]) // die drei lang ist
+					current.upperTileTypes[i] = adjacent_TerrainId[i] * 64 + 12 + i; // U-Form
+				else
+					current.upperTileTypes[i] = adjacent_TerrainId[i] * 64 + 8 + i;  // L-Form
+			}
+			else if (adjacent_TerrainId[i] == adjacent_TerrainId[(i + 2) % 4]) { // Nachbarn sind anders, was ist gegenüber?
+				if (i < (i + 2) % 4)											// Nur auf einer Seite einen Sprite erzeugen!
+					current.upperTileTypes[i] = adjacent_TerrainId[i] * 64 + 2 + i % 2;	// ||-Form
+				else
+					current.upperTileTypes[i] = adjacent_TerrainId[i] * 64;				// gegenüber bekommt ||-Form
+			}
+			else
+				current.upperTileTypes[i] = adjacent_TerrainId[i] * 64 + 4 + i;	// Kein anderer Sprite gleich, einfache Kante
+		}
+		else
+			current.upperTileTypes[i] = adjacent_TerrainId[i] * 64;		// linker Nachbar gleich, also deckt seine U bzw L Form die aktuelle Position ab
+	}
+
+	/*for (int i = 0; i < 4; i++) {
+		if (adjacent_TerrainId[i] >= current.lowerTileType / 64)
+			current.upperTileTypes[i] = adjacent_TerrainId[i] * 64;
 		else if (adjacent_TerrainId[i] < current.lowerTileType / 64)
 			current.upperTileTypes[i] = adjacent_TerrainId[i] * 64 + 4 + i;
-	}
+	}*/
 }
 
