@@ -313,7 +313,7 @@ void CGroundHandler::updateTileSeam(int index) {
 	for (int i = 1; i < 4; i++)
 		if (adjacent_TerrainId[i] != adjacent_TerrainId[0])
 			alle_gleich = false;
-	if (alle_gleich && current.lowerTileType/64 != adjacent_TerrainId[0]) {
+	if (alle_gleich && current.lowerTileType/64 >= adjacent_TerrainId[0]) {
 		current.upperTileTypes[0] = adjacent_TerrainId[0] * 64 + 1;
 		for (int i = 1; i < 4; i++)
 			current.upperTileTypes[i] = adjacent_TerrainId[0]*64;
