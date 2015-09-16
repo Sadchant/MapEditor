@@ -28,7 +28,6 @@ public:
 
 private:
 	void Delete_Map();
-	int GetRandom();	// gibt Zahl zwischen 0 und 3 zurück
 	int CalculateModus(int numTilesX, int radius, int index);
 	void DrawModus1(int index, int radius, int id);
 	void DrawModus2(int index, int radius, int id);

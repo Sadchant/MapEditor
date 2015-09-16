@@ -23,10 +23,10 @@ void CGroundHandler::Neue_map(int width, int height)
 	map = new Tiles[numTiles];
 	for (int i = 0; i < numTiles; i++)
 	{
-		map[i].lowerTileType = 0 + GetRandom()*16;
+		map[i].lowerTileType = 0 + (rand()%4) * 16;
 		for (int j = 0; j < NUMUPST; j++)
 		{
-			map[i].upperTileTypes[j] = 0;
+			map[i].upperTileTypes[j] = 0 + (rand()%4) * 16;
 		}
 	}
 
@@ -119,7 +119,11 @@ void CGroundHandler::Change_groesse(int width, int height, int aktBackgroundId)
 			oldindex = i*oldnumTilesX + j;
 			// sollte die neue Map größer sein, müssen die neuen Felder mit dem Hintegrund neu belegt werden
 			if ((oldindex >= oldnumTiles) || (j >= oldnumTilesX))
-				map[i*numTilesX + j] = Tiles{ aktBackgroundId + GetRandom() * 16, { aktBackgroundId, aktBackgroundId, aktBackgroundId, aktBackgroundId } };
+				map[i*numTilesX + j] = Tiles{ aktBackgroundId + (rand() % 4) * 16,
+					  { aktBackgroundId + (rand() % 4) * 16,
+						aktBackgroundId + (rand() % 4) * 16,
+						aktBackgroundId + (rand() % 4) * 16,
+						aktBackgroundId + (rand() % 4) * 16 } };
 			else
 				// ansonsten wir der alte wert kopiert
 				map[i*numTilesX + j] = oldMap[oldindex];
@@ -137,9 +141,9 @@ void CGroundHandler::SetNewBackGround(int id)
 	for (int i = 0; i < numTiles; i++)
 	{
 		if ((map[i].lowerTileType >= aktBackgroundId) && (map[i].lowerTileType < aktBackgroundId + 64)) {
-			map[i].lowerTileType = id + GetRandom() * 16;
+			map[i].lowerTileType = id + (rand()%4) * 16;
 			for (int j = 0; j < 4; j++) {
-				map[i].upperTileTypes[j] = id;
+				map[i].upperTileTypes[j] = id + (rand()%4) * 16;
 			}
 		}
 	}
@@ -190,11 +194,6 @@ void CGroundHandler::Delete_Map()
 {
 	SAFE_DELETE_ARRAY(map);
 	numTiles = -1;
-}
-
-int CGroundHandler::GetRandom()
-{
-	return rand() % 3;
 }
 
 int CGroundHandler::CalculateModus(int numTilesX, int radius, int index)
