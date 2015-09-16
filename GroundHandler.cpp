@@ -143,6 +143,8 @@ void CGroundHandler::SetNewBackGround(int id)
 			}
 		}
 	}
+	for (int i = 0; i < numTiles; i++)
+		updateTileSeam(i);
 	aktBackgroundId = id ;
 }
 
@@ -240,17 +242,17 @@ void CGroundHandler::DrawField(int index, int id)
 {
 	if ((index < 0) || (index >= numTiles))
 		return;
-	//id -= id%64;
-	if (map[index].lowerTileType / 64 != id / 64) {
-		map[index].lowerTileType = id + (rand() % 4) * 16;
+	id /= 64;
+	if (map[index].lowerTileType / 64 != id) {
+		map[index].lowerTileType = id * 64 + (rand() % 4) * 16;
 		for (int i = 0; i < 4; i++)
-			map[index].upperTileTypes[i] = id;
+			map[index].upperTileTypes[i] = id * 64 + (rand()%4) * 16;
+		updateTileSeam(index);
+		updateTileSeam(min(index + numTilesX, numTiles - 1));
+		updateTileSeam(min(index + 1, numTiles - 1));
+		updateTileSeam(max(index - numTilesX, 0));
+		updateTileSeam(max(index - 1, 0));
 	}
-	updateTileSeam(index);
-	updateTileSeam(min(index + numTilesX, numTiles-1));
-	updateTileSeam(min(index + 1, numTiles-1));
-	updateTileSeam(max(index - numTilesX, 0));
-	updateTileSeam(max(index - 1, 0));
 }
 
 void CGroundHandler::updateTileSeam(int index) {
@@ -258,101 +260,54 @@ void CGroundHandler::updateTileSeam(int index) {
 		return;
 
 	Tiles& current = map[index];
-	// Terrain-Basis-Id's der angrenzenden Felder (Variationen vereint)
-	int adjacent_TerrainId[4] = {	map[min(index + numTilesX, numTiles-1)].lowerTileType / 64,
-									map[min(index + 1, numTiles-1)].lowerTileType / 64,
-									map[max(index - numTilesX, 0)].lowerTileType / 64,
-									map[max(index - 1, 0)].lowerTileType / 64 };
-	// Terrain-Basis-ID's der angrenzenden Felder, von den aktuellen Rahmensprites ausgehend
-	int seamTerrainID[4] = {	current.lowerTileType/64,
-								current.lowerTileType/64,
-								current.lowerTileType/64,
-								current.lowerTileType/64 };
 
-	// For-Schleife: Bestimme Nachbarfarben, wenns nach den aktuellen Sprites geht
-	for (int i = 0; i < 4; i++) {
-		int shape = current.upperTileTypes[i] % 16;
-		int color = current.upperTileTypes[i] / 64;
-		switch (shape) {
-		case 1:										// Alle Kanten gleiche Farbe
-			seamTerrainID[(i + 3) % 4] = color;			// Kante links der aktuellen Kante
-		case 12: case 13: case 14: case 15:			// U-Form mit den nächsten beiden Kanten gegen Uhrzeigersinn
-			seamTerrainID[(i + 2) % 4] = color;			// Kante gegenüber der aktuellen Kante
-		case 8: case 9: case 10: case 11:			// L-Form mit der nächsten Kante gegen Uhrzeigersinn
-			seamTerrainID[(i + 1) % 4] = color;			// Kante rechts der aktuellen Kante
-		case 4: case 5: case 6: case 7:				// nur aktuelle Kante
-			seamTerrainID[i] = color;					// aktuelle Kante
-		break;
-
-		case 2: case 3:								// Aktuelle und gegenüberliegende Kante
-			seamTerrainID[i] = color;					// aktuelle Kante
-			seamTerrainID[(i + 2) % 4] = color;			// gegenüberliegende Kante
-		// sonst shape 0 -> Kein Rand
-		default:
-			;
-		}
-	}
-
-	// Brich ab wenn Sprites ok sind
-	// TODO
-	bool correct_seam = true;
+	// aktuelle Varianten
+	int variant[4];
 	for (int i = 0; i < 4; i++)
-		if (adjacent_TerrainId[i] == seamTerrainID[i] ||
-			(adjacent_TerrainId[i] > current.lowerTileType / 64 && current.upperTileTypes[i]%16 == 0))
-			;// Rand stimmt mit Nachbarn überein ODER (Kein Übergang benötigt UND Sprite ist deaktiviert)
-		else
-			correct_seam = false;
-	if (correct_seam) {
-		;// return;
-	}
+		variant[i] = (current.upperTileTypes[i] / 16) % 4;
 
-	// sonst generiere neue Sprites
+	// Terrainfarben der Nachbarfelder
+	int adj_color[4] = {	map[min(index + numTilesX, numTiles-1)].lowerTileType / 64,
+							map[min(index + 1, numTiles-1)].lowerTileType / 64,
+							map[max(index - numTilesX, 0)].lowerTileType / 64,
+							map[max(index - 1, 0)].lowerTileType / 64 };
 
-	// Sonderfall: Alle angrenzenden Felder sind gleich, aber aktuelles Feld ist anders
-	bool alle_gleich = true;
-	for (int i = 1; i < 4; i++)
-		if (adjacent_TerrainId[i] != adjacent_TerrainId[0])
-			alle_gleich = false;
-	if (alle_gleich && current.lowerTileType/64 >= adjacent_TerrainId[0]) {
-		current.upperTileTypes[0] = adjacent_TerrainId[0] * 64 + 1;
-		for (int i = 1; i < 4; i++)
-			current.upperTileTypes[i] = adjacent_TerrainId[0]*64;
-		return;
-	}
-
-	// Ansonsten generiere Ecksprites da, wo die Ecke beginnt (Position am weitesten im Uhrzeigersinn)
+	// Benötigte Spriteformen
+	int want_shape[4];
 	for (int i = 0; i < 4; i++) {
-		// Farbe ist entweder gleich dem Nachbarn oder es muss keine Kante erzeugt werden
-		if (adjacent_TerrainId[i] >= current.lowerTileType / 64) {
-			current.upperTileTypes[i] = adjacent_TerrainId[i] * 64;
-			continue;
-		}
-
-		if (adjacent_TerrainId[i] != adjacent_TerrainId[(i - 1) % 4]) {		// An aktueller Position beginnt eine Ecke
-			if (adjacent_TerrainId[i] == adjacent_TerrainId[(i + 1) % 4]) { // Die mindestens zwei lang ist
-				if (adjacent_TerrainId[i] == adjacent_TerrainId[(i + 2) % 4]) // die drei lang ist
-					current.upperTileTypes[i] = adjacent_TerrainId[i] * 64 + 12 + i; // U-Form
-				else
-					current.upperTileTypes[i] = adjacent_TerrainId[i] * 64 + 8 + i;  // L-Form
+		if (adj_color[i] == adj_color[(i + 3) % 4]) {							// Linker Nachbar hat gleiche Farbe?
+			want_shape[i] = 0;
+			if (adj_color[i] == adj_color[(i + 2) % 4] && adj_color[i] == adj_color[(i + 1) % 4])
+				want_shape[i] = 1;
+		} // Linker Nachbar hat andere Farbe
+		else if (adj_color[i] == adj_color[(i + 2) % 4]) {							// Gegenüber gleiche Farbe?
+			if (adj_color[i] == adj_color[(i + 1) % 4]) {							// Rechts gleiche Farbe?
+				want_shape[i] = 12 + i;
+			} else { // nur i und Gegenüber gleich
+				want_shape[i] = (i < 2) ? 2 + i : 0;
 			}
-			else if (adjacent_TerrainId[i] == adjacent_TerrainId[(i + 2) % 4]) { // Nachbarn sind anders, was ist gegenüber?
-				if (i < (i + 2) % 4)											// Nur auf einer Seite einen Sprite erzeugen!
-					current.upperTileTypes[i] = adjacent_TerrainId[i] * 64 + 2 + i % 2;	// ||-Form
-				else
-					current.upperTileTypes[i] = adjacent_TerrainId[i] * 64;				// gegenüber bekommt ||-Form
+		} // Gegenüber hat auch andere Farbe
+		else {
+			if (adj_color[i] == adj_color[(i + 1) % 4]) {
+				want_shape[i] = 8 + i;
+			} else {
+				want_shape[i] = 4 + i;
 			}
-			else
-				current.upperTileTypes[i] = adjacent_TerrainId[i] * 64 + 4 + i;	// Kein anderer Sprite gleich, einfache Kante
 		}
-		else
-			current.upperTileTypes[i] = adjacent_TerrainId[i] * 64;		// linker Nachbar gleich, also deckt seine U bzw L Form die aktuelle Position ab
 	}
 
-	/*for (int i = 0; i < 4; i++) {
-		if (adjacent_TerrainId[i] >= current.lowerTileType / 64)
-			current.upperTileTypes[i] = adjacent_TerrainId[i] * 64;
-		else if (adjacent_TerrainId[i] < current.lowerTileType / 64)
-			current.upperTileTypes[i] = adjacent_TerrainId[i] * 64 + 4 + i;
-	}*/
+	// Sprite deaktivieren wenn Hierarchie es verlangt
+	for (int i = 0; i < 4; i++) {
+		if (current.lowerTileType / 64 <= adj_color[i])
+			want_shape[i] = 0;
+	}
+	
+	// Shape und Color der aktuellen Tiles updaten, ohne Variante zu verändern
+	for (int i = 0; i < 4; i++) {
+		current.upperTileTypes[i] =
+			adj_color[i] * 64 +
+			variant[i] * 16 +
+			want_shape[i];
+	}
 }
 
