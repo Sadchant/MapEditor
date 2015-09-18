@@ -265,11 +265,19 @@ void CGroundHandler::updateTileSeam(int index) {
 	for (int i = 0; i < 4; i++)
 		variant[i] = (current.upperTileTypes[i] / 16) % 4;
 
-	// Terrainfarben der Nachbarfelder
+	// Terrainfarben der Nachbarfelder, wird Farbe des aktuellen Tiles gesetzt wenn am Rand der Map
 	int adj_color[4] = {	map[min(index + numTilesX, numTiles-1)].lowerTileType / 64,
 							map[min(index + 1, numTiles-1)].lowerTileType / 64,
 							map[max(index - numTilesX, 0)].lowerTileType / 64,
 							map[max(index - 1, 0)].lowerTileType / 64 };
+	if (index < numTilesX)					// Oberer Rand
+		adj_color[2] = current.lowerTileType / 64;
+	if (index % numTilesX == 0)				// Linker Rand
+		adj_color[3] = current.lowerTileType / 64;
+	if (index % numTilesX == numTilesX - 1)	// Rechter Rand
+		adj_color[1] = current.lowerTileType / 64;
+	if (index + numTilesX >= numTiles)		// Unterer Rand
+		adj_color[0] = current.lowerTileType / 64;
 
 	// Benötigte Spriteformen
 	int want_shape[4];
