@@ -252,6 +252,9 @@ void CGroundHandler::DrawField(int index, int id)
 		updateTileSeam(max(index - numTilesX, 0));
 		updateTileSeam(max(index - 1, 0));
 	}
+	/*else {
+		cycleSeamVariation(index, rand()%4);	// Zykelt ansonsten einen zufällig ausgewählten Randsprite
+	}*/
 }
 
 void CGroundHandler::updateTileSeam(int index) {
@@ -318,3 +321,35 @@ void CGroundHandler::updateTileSeam(int index) {
 	}
 }
 
+void CGroundHandler::cycleSeamVariation(int index, int orientation) {
+	if (index < 0 || index >= numTiles || orientation < 0 || orientation > 3)
+		return;
+	Tiles& current = map[index];
+
+	// Speichere in Target die Position mit dem Randsprite der die Position "orientation" abdeckt
+	int target = -1;
+	if (current.upperTileTypes[0] % 16 == 1)	// Insel-Sprite
+		target = 0;
+	else if (current.upperTileTypes[orientation] != 0)	// Sprite beginnt hier
+		target = orientation;
+	else if (current.upperTileTypes[(orientation + 3) % 4] % 2 == 1)	// L- oder U-Sprite, der links von orientation beginnt
+		target = (orientation + 3) % 4;
+	else if (current.upperTileTypes[(orientation + 2) % 4] % 4 == 3 ||	// U-Sprite, der gegenüber von orientation beginnt
+		(orientation == 2 && current.upperTileTypes[0] % 16 == 3) ||	// =-Sprite, der gegenüber von orientation beginnt
+		(orientation == 3 && current.upperTileTypes[1] % 16 == 4))	// ||-Sprite, der gegenüber von orientation beginnt
+		target = (orientation + 2) % 4;
+
+	if (target == -1)	// Kein Randsprite für diese Orientierung vorhanden, nothing to do
+		return;
+
+	// Zerlege die gesuchte Sprite-ID
+	int color = current.upperTileTypes[target] / 64,
+		shape = current.upperTileTypes[target] % 16,
+		variation = (current.upperTileTypes[target] / 16) % 4;
+
+	// Bastle sie mit geänderter Variation zusammen
+	current.upperTileTypes[target] =
+		color * 64 +
+		(variation + 1) % 4 * 16 +
+		shape;
+}
