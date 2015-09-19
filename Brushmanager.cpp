@@ -35,7 +35,6 @@ void CBrushmanager::Map_Mouse_Key(ME_MOUSE mouse, ABrushButton* brushButton)
 	}
 	if (brushButtons[mouse] && (brushButtons[mouse] != brushButton))
 	{
-		cout << "Deselect" << endl;
 		brushButtons[mouse]->DeSelect();
 	}
 
