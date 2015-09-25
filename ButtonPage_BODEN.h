@@ -21,7 +21,7 @@ private:
 	void GenerateButtons();
 	int Generate_boden_standard(int start_y);
 
-	static const int NUMBODEN = 7;
+	static const int NUMBODEN = 8;
 
 	vector<CBrushButton> boden_standard;
 	vector<CBrushButton> boden_wall;

@@ -29,7 +29,6 @@ void TerrainRenderer::Render() {
 					upperSpriteGrid[k][j*numspritex + i].Render(map[mapPosition].upperTileTypes[k]);
 				}
 			}
-
 		}
 	}
 }

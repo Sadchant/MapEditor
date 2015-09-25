@@ -158,7 +158,6 @@ void CGroundHandler::Draw(int mouseX, int mouseY, int id, int radius)
 	index_2 = (camera->x + mouseX) / tile_width;
 	index = (index_1 * numTilesX) + index_2;
 	aktModus = CalculateModus(numTilesX, radius, index);
-	g_pDebugscreen->Set("Modus:", aktModus);
 	switch (aktModus)
 	{
 		case 1:
