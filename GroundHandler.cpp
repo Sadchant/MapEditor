@@ -181,9 +181,6 @@ void CGroundHandler::Draw(int mouseX, int mouseY, int id, int radius)
 void CGroundHandler::Render()
 {
 	terrainRenderer.Render();
-	terrainRenderer.Render();
-	terrainRenderer.Render();
-	terrainRenderer.Render();
 }
 
 void CGroundHandler::RenderBorder(int mouseX, int mouseY, int radius)
