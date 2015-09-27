@@ -65,22 +65,21 @@ void CButtonPage_BODEN::Render()
 
 void CButtonPage_BODEN::GenerateButtons()
 {
-	int boden_y_end = Generate_boden_standard(y_start);
+	SNext_row_data temp_data = Generate_boden_standard(y_start);
+	temp_data = Generate_boden_wall(temp_data.akt_y + abstand, temp_data.last_id + 1);
 }
+
 
 // Erzeugt alle Buttons, mit denen man Boden malen kann
 // gibt die y-Höhe zurück
-int CButtonPage_BODEN::Generate_boden_standard(int start_y)
+SNext_row_data CButtonPage_BODEN::Generate_boden_standard(int start_y)
 {
-	int buttonWidth = 45; // mit Rand 49
-	int buttonHeight = 45; // mit Rand 49
-	int bor_ButtonWidth = buttonWidth + 4;
-	int bor_ButtonHeight = buttonHeight + 4;
-	int akt_y = start_y;
-	int akt_x = x_start;
+	akt_y = start_y;
+	akt_x = x_start;
 
 	// i repräsentiert die id
-	for (int i = 0; i < NUMBODEN; i++)
+	int i;
+	for (i = 0; i < NUMBODEN; i++)
 	{
 		// sollte die Buttonreihe aus dem linken Teil herauslaufen wird alles gerichtet
 		if (akt_y + bor_ButtonWidth > MOVECAMX)
@@ -89,10 +88,33 @@ int CButtonPage_BODEN::Generate_boden_standard(int start_y)
 			akt_x = x_start;
 		}
 		buttonRect = { akt_x, akt_y, buttonWidth, buttonHeight };
-		CBrushButton akt_Button = CBrushButton(i * 64, BODEN, buttonRect, g_pLoader->getTexture("T_TEXTURSETMENU"), g_pLoader->getTexture("T_BUTTONBORDER"));
+		CBrushButton akt_Button = CBrushButton(i * 64, BODEN, buttonRect, g_pLoader->getTexture("T_TEXTURSET_1_MENU"), g_pLoader->getTexture("T_BUTTONBORDER"));
 		boden_standard.push_back(akt_Button);
 		akt_x += abstand;
 	}
-	return akt_y;
+	return{ akt_y, i };
+}
 
+// Erzeugt alle Buttons, mit denen man Boden malen kann
+// gibt die y-Höhe zurück
+SNext_row_data CButtonPage_BODEN::Generate_boden_wall(int start_y, int index)
+{
+	akt_y = start_y;
+	akt_x = x_start;
+
+	int i;
+	for (i = index;  i < NUMBODENWALL; i++)
+	{
+		// sollte die Buttonreihe aus dem linken Teil herauslaufen wird alles gerichtet
+		if (akt_y + bor_ButtonWidth > MOVECAMX)
+		{
+			akt_y += abstand;
+			akt_x = x_start;
+		}
+		buttonRect = { akt_x, akt_y, buttonWidth, buttonHeight };
+		CBrushButton akt_Button = CBrushButton(i * 64, BODEN, buttonRect, g_pLoader->getTexture("T_TEXTURSET_WALL_1_MENU"), g_pLoader->getTexture("T_BUTTONBORDER"));
+		boden_standard.push_back(akt_Button);
+		akt_x += abstand;
+	}
+	return{ akt_y, i };
 }

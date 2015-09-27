@@ -6,9 +6,9 @@ map(*map), mapwidth(mapwidth), camera(*camera) {
 	numspritey = this->camera->h / TILEHEIGHT + 1;
 
 	// Erzeuge neue Terrainsprites
-	spriteGrid = vector<CSprite>(numspritex*numspritey, CSprite(g_pLoader->getTexture("T_TEXTURSET1")));
+	spriteGrid = vector<CSprite>(numspritex*numspritey, CSprite(g_pLoader->getTexture("T_TEXTURSET_1")));
 	for (int i = 0; i < NUMUPST; i++)
-		upperSpriteGrid[i] = vector<CSprite>(numspritex*numspritey, CSprite(g_pLoader->getTexture("T_TEXTURSET1")));
+		upperSpriteGrid[i] = vector<CSprite>(numspritex*numspritey, CSprite(g_pLoader->getTexture("T_TEXTURSET_1")));
 }
 
 void TerrainRenderer::Render() {

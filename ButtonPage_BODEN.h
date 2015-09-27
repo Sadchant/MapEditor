@@ -19,9 +19,12 @@ public:
 
 private:
 	void GenerateButtons();
-	int Generate_boden_standard(int start_y);
+	SNext_row_data Generate_boden_standard(int start_y);
+	SNext_row_data Generate_boden_wall(int start_y, int index);
+	SNext_row_data Generate_boden_fluid(int start_y, int index);
 
 	static const int NUMBODEN = 8;
+	static const int NUMBODENWALL = 8;
 
 	vector<CBrushButton> boden_standard;
 	vector<CBrushButton> boden_wall;

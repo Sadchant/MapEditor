@@ -6,6 +6,12 @@
 #include "ButtonColorManager.h"
 #include "Brushmanager.h"
 
+struct SNext_row_data
+{
+	int akt_y;
+	int last_id;
+};
+
 class CButtonPage
 {
 public:
@@ -21,6 +27,13 @@ protected:
 	int x_start = 30;
 	SDL_Rect buttonRect;
 	int abstand = 65;
+
+	int buttonWidth = 45; // mit Rand 49
+	int buttonHeight = 45; // mit Rand 49
+	int bor_ButtonWidth = buttonWidth + 4;
+	int bor_ButtonHeight = buttonHeight + 4;
+	int akt_y;
+	int akt_x;
 };
 
 #endif
