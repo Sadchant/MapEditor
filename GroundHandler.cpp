@@ -245,11 +245,15 @@ void CGroundHandler::DrawField(int index, int id)
 		map[index].lowerTileType = id * 64 + (rand() % 4) * 16;
 		for (int i = 0; i < 4; i++)
 			map[index].upperTileTypes[i] = id * 64 + (rand()%4) * 16;
-		updateTileSeam(index);
-		updateTileSeam(min(index + numTilesX, numTiles - 1));
-		updateTileSeam(min(index + 1, numTiles - 1));
-		updateTileSeam(max(index - numTilesX, 0));
-		updateTileSeam(max(index - 1, 0));
+		//updateTileSeam(index);
+		//updateTileSeam(min(index + numTilesX, numTiles - 1));
+		//updateTileSeam(min(index + 1, numTiles - 1));
+		//updateTileSeam(max(index - numTilesX, 0));
+		//updateTileSeam(max(index - 1, 0));
+		setTileSeam(index + numTilesX, 2, id); // unteres Tile
+		setTileSeam(index + 1, 3, id); // rechtes Tile
+		setTileSeam(index - numTilesX, 0, id); // oberes Tile
+		setTileSeam(index - 1, 1, id); // linkes Tile
 	}
 	/*else {
 		cycleSeamVariation(index, rand()%4);	// Zykelt ansonsten einen zufällig ausgewählten Randsprite
@@ -267,7 +271,7 @@ void CGroundHandler::updateTileSeam(int index) {
 	for (int i = 0; i < 4; i++)
 		variant[i] = (current.upperTileTypes[i] / 16) % 4;
 
-	// Terrainfarben der Nachbarfelder, wird Farbe des aktuellen Tiles gesetzt wenn am Rand der Map
+	// Terrainfarben der Nachbarfelder, wird auf Farbe des aktuellen Tiles gesetzt wenn am Rand der Map
 	int adj_color[4] = {	map[min(index + numTilesX, numTiles-1)].lowerTileType / 64,
 							map[min(index + 1, numTiles-1)].lowerTileType / 64,
 							map[max(index - numTilesX, 0)].lowerTileType / 64,
@@ -285,22 +289,22 @@ void CGroundHandler::updateTileSeam(int index) {
 	int want_shape[4];
 	for (int i = 0; i < 4; i++) {
 		if (adj_color[i] == adj_color[(i + 3) % 4]) {							// Linker Nachbar hat gleiche Farbe?
-			want_shape[i] = 0;
-			if (adj_color[i] == adj_color[(i + 2) % 4] && adj_color[i] == adj_color[(i + 1) % 4])
-				want_shape[i] = 1;
+			want_shape[i] = 0; // Linker Nachbar kümmert sich um den Sprite
+			if (adj_color[i] == adj_color[(i + 2) % 4] && adj_color[i] == adj_color[(i + 1) % 4] && i==0)
+				want_shape[i] = 1; // Insel, nur in upperSpriteTiles[0] gespeichert
 		} // Linker Nachbar hat andere Farbe
 		else if (adj_color[i] == adj_color[(i + 2) % 4]) {							// Gegenüber gleiche Farbe?
 			if (adj_color[i] == adj_color[(i + 1) % 4]) {							// Rechts gleiche Farbe?
-				want_shape[i] = 12 + i;
-			} else { // nur i und Gegenüber gleich
-				want_shape[i] = (i < 2) ? 2 + i : 0;
+				want_shape[i] = 12 + i; // U-Form
+			} else {
+				want_shape[i] = (i < 2) ? 2 + i : 0; // = oder || Form
 			}
 		} // Gegenüber hat auch andere Farbe
 		else {
 			if (adj_color[i] == adj_color[(i + 1) % 4]) {
-				want_shape[i] = 8 + i;
+				want_shape[i] = 8 + i; // L Form
 			} else {
-				want_shape[i] = 4 + i;
+				want_shape[i] = 4 + i; // kein verbundener Rand
 			}
 		}
 	}
@@ -312,6 +316,10 @@ void CGroundHandler::updateTileSeam(int index) {
 	}
 	
 	// Shape und Color der aktuellen Tiles updaten, ohne Variante zu verändern
+	// ...xx yy zzzz
+	// x: colorbits/Textur-Index
+	// y: Variante
+	// z: Form des Sprites
 	for (int i = 0; i < 4; i++) {
 		current.upperTileTypes[i] =
 			adj_color[i] * 64 +
@@ -351,4 +359,111 @@ void CGroundHandler::cycleSeamVariation(int index, int orientation) {
 		color * 64 +
 		(variation + 1) % 4 * 16 +
 		shape;
+}
+
+// Setze den Rand an der gegebenen Seite eines Tiles auf eine neue Textur/Farbe.
+void CGroundHandler::setTileSeam(int position, int side, int color) {
+	// ungültige Parameter abfangen
+	if (position < 0 || position >= numTiles || side < 0 || side > 3)
+		return;
+
+	Tiles& current = map[position];
+
+	// Varianten der Randsprites
+	int variant[4];
+	for (int i = 0; i < 4; i++)
+		variant[i] = (current.upperTileTypes[i] / 16) % 4;
+
+	// Formen der Randsprites
+	int shape[4];
+	for (int i = 0; i < 4; i++)
+		shape[i] = current.upperTileTypes[i] % 16;
+
+	// Farben der Randsprites, -1 wenn es keinen Rand gibt (oder er auf dem Nachbartile liegt)
+	int colors[4];
+	for (int i = 0; i < 4; i++)
+		colors[i] = -1;
+	for (int i = 0; i < 4; i++) {
+		if (shape[i] == 0) {
+			// kein Sprite hier, überspringen
+			continue;
+		}
+		else if (shape[i] == 1) {
+			// Insel-Sprite: Alle colors sind gleich
+			for (int j = 0; j < 4; j++)
+				colors[j] = current.upperTileTypes[i] / 64;
+			break;
+		}
+		else if (shape[i] < 4) {
+			// || oder = Form, setze Farbe von i und seinem Gegenüber
+			colors[i] = current.upperTileTypes[i] / 64;
+			colors[(i + 2) % 4] = current.upperTileTypes[i] / 64;
+		}
+		else if (shape[i] < 8) {
+			// _ Form, setze nur Farbe von i
+			colors[i] = current.upperTileTypes[i] / 64;
+		}
+		else if (shape[i] < 12) {
+			// L-Form, setze Farbe von i und seinem rechten Nachbarn
+			colors[i] = current.upperTileTypes[i] / 64;
+			colors[(i + 1) % 4] = current.upperTileTypes[i] / 64;
+		}
+		else {
+			// U-Form, setze Farbe von i, seinem rechten Nachbarn und Gegenüber
+			colors[i] = current.upperTileTypes[i] / 64;
+			colors[(i + 1) % 4] = current.upperTileTypes[i] / 64;
+			colors[(i + 2) % 4] = current.upperTileTypes[i] / 64;
+		}
+	}
+
+	// Setze die neue Farbe am gwünschten Rand
+	colors[side] = color;
+
+	// Bastle die shapes neu zusammen, denn die alten sind evtl. nun ungültig
+	for (int i = 0; i < 4; i++) {
+		if (colors[i] == colors[(i + 3) % 4]) {
+			// Linker Nachbar hat gleiche Farbe, der speichert den Sprite
+			shape[i] = 0;
+			// außer wir haben eine Insel, dann speichert i = 0 den Sprite
+			if (colors[i] == colors[(i + 2) % 4] && colors[i] == colors[(i + 1) % 4]) //&& i == 0)
+				shape[i] = 1;
+		}
+		else if (colors[i] == colors[(i + 2) % 4]) {
+			// Linker Nachbar hat andere Farbe, Gegenüber aber gleiche Farbe
+			if (colors[i] == colors[(i + 1) % 4]) {
+				// Rechts auch gleiche Farbe => U-Form
+				shape[i] = 12 + i;
+			}
+			else {
+				// Nur i und Gegenüber gleiche Farbe => || oder = Form, gespeichert in i = 0 bzw i = 1
+				shape[i] = (i < 2) ? 2 + i : 0;
+			}
+		}
+		else {
+			// Links und Gegenüber haben andere Farben
+			if (colors[i] == colors[(i + 1) % 4]) {
+				// Rechts hat aber gleiche Farbe => L-Form
+				shape[i] = 8 + i;
+			}
+			else {
+				// Alle anderen Seiten haben eine andere Farbe => _-Form
+				shape[i] = 4 + i;
+			}
+		}
+	}
+
+	// Sprite für die Farbe -1 deaktivieren
+	for (int i = 0; i < 4; i++)
+		if (colors[i] == -1) {
+			shape[i] = 0;
+			colors[i] = current.lowerTileType / 64;
+		}
+
+	// Randsprites zusammenbasteln
+	for (int i = 0; i < 4; i++) {
+		current.upperTileTypes[i] =
+			colors[i] * 64 +
+			variant[i] * 16 +
+			shape[i];
+	}
 }
