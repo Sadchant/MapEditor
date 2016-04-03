@@ -5,6 +5,7 @@ CButtonPage_BODEN::CButtonPage_BODEN(CBrushmanager* brushmanager)
 	this->brushManager = brushmanager;
 	GenerateButtons();
 	temp_Button = NULL;
+	//Calculate_tile_count();
 }
 
 
@@ -62,6 +63,13 @@ void CButtonPage_BODEN::Render()
 	}
 }
 
+// geht durch alle Texturfiles und liest die Anzahl der Tilevariationen aus
+void CButtonPage_BODEN::Calculate_tile_count()
+{
+	CSprite tempSprite = CSprite(g_pLoader->getTexture("T_TEXTURSET_1"));
+	tempSprite = CSprite(g_pLoader->getTexture("T_TEXTURSET_2"));
+	
+}
 
 void CButtonPage_BODEN::GenerateButtons()
 {
@@ -95,7 +103,7 @@ SNext_row_data CButtonPage_BODEN::Generate_boden_standard(int start_y)
 	return{ akt_y, i };
 }
 
-// Erzeugt alle Buttons, mit denen man Boden malen kann
+// Erzeugt alle Buttons, mit denen man Berge malen kann
 // gibt die y-Höhe zurück
 SNext_row_data CButtonPage_BODEN::Generate_boden_wall(int start_y, int index)
 {

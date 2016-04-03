@@ -158,24 +158,23 @@ void CGroundHandler::Draw(int mouseX, int mouseY, int id, int radius)
 	index_2 = (camera->x + mouseX) / tile_width;
 	index = (index_1 * numTilesX) + index_2;
 	aktModus = CalculateModus(numTilesX, radius, index);
+	//g_pDebugscreen->Set("modus:", aktModus);
 	switch (aktModus)
 	{
 		case 1:
-		{
-				  DrawModus1(index, radius, id);
+		{			
+			DrawModus1(index, radius, id); // malen am rechten Rand
 		}break;
 		case 2:
-		{
-				  DrawModus2(index, radius, id);
+		{			
+			DrawModus2(index, radius, id); //malen am linken Rand
 		}break;
 		case 3:
-		{
-				  DrawModus3(index, radius, id);
+		{			
+			DrawModus3(index, radius, id); // malen ohne Rand
 		}break;
 	}
 }
-
-
 
 
 void CGroundHandler::Render()
@@ -236,6 +235,7 @@ void CGroundHandler::DrawModus3(int index, int radius, int id)
 	}
 }
 
+// wird für jeden Tile aufgerufen, der durchs anmalen geändert wurde, löscht auch alte ränder die dann falsch sind
 void CGroundHandler::DrawField(int index, int id)
 {
 	if ((index < 0) || (index >= numTiles))
@@ -246,17 +246,20 @@ void CGroundHandler::DrawField(int index, int id)
 		for (int i = 0; i < 4; i++)
 			map[index].upperTileTypes[i] = id * 64 + (rand()%4) * 16;
 		updateTileSeam(index);
-		updateTileSeam(min(index + numTilesX, numTiles - 1));
-		updateTileSeam(min(index + 1, numTiles - 1));
-		updateTileSeam(max(index - numTilesX, 0));
-		updateTileSeam(max(index - 1, 0));
+		updateTileSeam(index + numTilesX);
+		updateTileSeam(index + 1);
+		updateTileSeam(index - numTilesX);
+		updateTileSeam(index - 1);
 	}
 	/*else {
 		cycleSeamVariation(index, rand()%4);	// Zykelt ansonsten einen zufällig ausgewählten Randsprite
 	}*/
 }
 
-void CGroundHandler::updateTileSeam(int index) {
+// updated Rand vom Tile index in der Map (git nur für ein Tile)
+void CGroundHandler::updateTileSeam(int index) 
+{
+	// falls der zu bearbeitende Tile außerhalb der Map liegt
 	if (index < 0 || index >= numTiles)
 		return;
 
@@ -320,6 +323,7 @@ void CGroundHandler::updateTileSeam(int index) {
 	}
 }
 
+// schaltet die Variation eines Rneds zur nächsten Variation weiter (um einen vom Nutzer gewünschten Rand auszusuchen), ändert aber nicht Logik oder Orientierung
 void CGroundHandler::cycleSeamVariation(int index, int orientation) {
 	if (index < 0 || index >= numTiles || orientation < 0 || orientation > 3)
 		return;

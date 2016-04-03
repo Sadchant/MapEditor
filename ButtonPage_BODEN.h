@@ -19,6 +19,7 @@ public:
 
 private:
 	void GenerateButtons();
+	void Calculate_tile_count();
 	SNext_row_data Generate_boden_standard(int start_y);
 	SNext_row_data Generate_boden_wall(int start_y, int index);
 	SNext_row_data Generate_boden_fluid(int start_y, int index);

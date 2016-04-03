@@ -506,8 +506,14 @@ LRESULT CALLBACK CWindowsPart::windowProc(HWND hWnd, UINT message, WPARAM wParam
 	}break;
 	case WM_MOUSEMOVE:
 	{
-		g_pKeyMouseManager->SetMouse_x(GET_X_LPARAM(lParam));
-		g_pKeyMouseManager->SetMouse_y(GET_Y_LPARAM(lParam) - WINDOWSGUI_HEIGHT);
+		int mouse_x = GET_X_LPARAM(lParam);
+		int mouse_y = GET_Y_LPARAM(lParam) - WINDOWSGUI_HEIGHT;
+
+		// sollte sich die Maus rechts aus dem Fenster bewegen
+		if (mouse_x > WINDOW_WIDTH) return (DefWindowProc(hWnd, message, wParam, lParam));
+
+		g_pKeyMouseManager->SetMouse_x(mouse_x);
+		g_pKeyMouseManager->SetMouse_y(mouse_y);
 	}break;
 	case WM_KEYDOWN:
 	{

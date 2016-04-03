@@ -2,6 +2,7 @@
 
 #include "KeyMouseManager.h"
 
+// Schnittstelle für Objekte, die auf Events reagieren sollen
 class AEventUser
 {
 public:

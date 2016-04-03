@@ -125,11 +125,11 @@
     <ClCompile Include="ProgressManager.cpp">
       <Filter>Quelldateien\Map\Progress</Filter>
     </ClCompile>
-    <ClCompile Include="GroundProgress.cpp">
-      <Filter>Quelldateien</Filter>
-    </ClCompile>
     <ClCompile Include="TerrainRenderer.cpp">
       <Filter>Quelldateien\Map</Filter>
+    </ClCompile>
+    <ClCompile Include="GroundProgress.cpp">
+      <Filter>Quelldateien\Map\Progress</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

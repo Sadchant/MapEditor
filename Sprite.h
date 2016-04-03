@@ -22,7 +22,7 @@ protected:
 	SDL_Renderer* renderer;
 	SDL_Rect source_Rect;			// Ausschnitt aus der Textur
 	CTexture* texture;
-	int numFramesX;
+	
 
 };
 

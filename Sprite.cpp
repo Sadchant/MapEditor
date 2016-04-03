@@ -12,11 +12,6 @@ CSprite::CSprite(CTexture* texture)
 
 	this->texture = texture;
 	renderer = g_pFramework->GetRenderer();
-
-	renderlayer = this->renderlayer = renderlayer;
-	int width, height = 0;
-	SDL_QueryTexture(this->texture->sdl_texture, NULL, NULL, &width, &height);
-	numFramesX = width / target_Rect.w;
 }
 
 // Sprite-Objekt an den Renderlayer geben
@@ -25,13 +20,11 @@ void CSprite::Render()
 	g_pRenderlayer->add_Renderjob(this, renderlayer);
 }
 
-
-
 // animiertes Sprite-Objekt an den Renderlayer geben
 void CSprite::Render(int frameNumber)
 {
-	int Column = frameNumber % numFramesX;					// Ausschnitt der aktuellen Animationsphase berechnen
-	int Row = frameNumber / numFramesX;
+	int Column = frameNumber % texture->numFramesX;					// Ausschnitt der aktuellen Animationsphase berechnen
+	int Row = frameNumber / texture->numFramesX;
 
 	source_Rect.x = Column * target_Rect.w;
 	source_Rect.y = Row * target_Rect.h;
@@ -44,7 +37,7 @@ void CSprite::Render(int frameNumber)
 // animiertes Sprite-Objekt an den Renderlayer geben
 void CSprite::Render(int frameNumber, int direction)
 {
-	int Column = frameNumber % numFramesX;					// Ausschnitt der aktuellen Animationsphase berechnen
+	int Column = frameNumber % texture->numFramesX;					// Ausschnitt der aktuellen Animationsphase berechnen
 	int Row = direction;
 
 	source_Rect.x = Column * target_Rect.w;

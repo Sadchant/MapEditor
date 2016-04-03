@@ -25,6 +25,7 @@ private:
 	Renderlayers renderlayer;			// der Layer, auf dem es nachher gerendert wird
 	int frameWidth;						// Breite eines Frames (nicht der ganzen Textur)
 	int frameHeight;					// Höhe eines Frames (nicht der ganzen Textur)
+	int numFramesX;
 };
 
 #endif

@@ -37,9 +37,9 @@ private:
 	void cycleSeamVariation(int index, int orientation);
 
 	Tiles* map;
-	int numTiles;
+	int numTiles; // Anzahl der Tiles in der aktuellen Map
 	int tile_width = TILEWIDTH, tile_height = TILEHEIGHT;
-	int numTilesX, numTilesY;
+	int numTilesX, numTilesY; // Tiles der Map ind X und Y-Richtung
 	int index_1, // erste Position im zweidimensionalen Tile-Array, repräsentiert y
 		index_2, // zweite Position im zweidimensionalen Tile-Array, repräsentiert x
 		index, // Position im eindimensionalen Array

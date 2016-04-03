@@ -17,6 +17,7 @@ CTexture::CTexture(const CTexture& other)
 	renderlayer = other.renderlayer;
 	frameWidth = other.frameWidth;
 	frameHeight = other.frameHeight;
+	numFramesX = other.numFramesX;
 	sdl_renderer = NULL;
 	sdl_texture = NULL;
 	Load();
@@ -28,6 +29,7 @@ CTexture& CTexture::operator = (const CTexture& other)
 	renderlayer = other.renderlayer;
 	frameWidth = other.frameWidth;
 	frameHeight = other.frameHeight;
+	numFramesX = other.numFramesX;
 	sdl_renderer = NULL;
 	sdl_texture = NULL;
 	Load();
@@ -76,5 +78,8 @@ void CTexture::reLoad()
 		g_pFramework->Quit();															// Framework herunterfahren
 		exit(1);																		// Gesamtes Spiel beenden
 	}
+	int width, height = 0;
+	SDL_QueryTexture(sdl_texture, NULL, NULL, &width, &height);
+	numFramesX = width / frameWidth;
 }
 
