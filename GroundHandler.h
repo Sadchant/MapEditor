@@ -35,6 +35,7 @@ private:
 	void DrawField(int index, int id);
 	void updateTileSeam(int index);
 	void cycleSeamVariation(int index, int orientation);
+	void setTileSeam(int position, int side, int color);
 
 	Tiles* map;
 	int numTiles; // Anzahl der Tiles in der aktuellen Map
